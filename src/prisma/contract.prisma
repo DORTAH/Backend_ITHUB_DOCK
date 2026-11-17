@@ -1,0 +1,50 @@
+// use prisma-8
+
+model ImportBatch {
+  id             Int                    @id @default(autoincrement())
+  sourceFileName String
+  semester       String?
+  rowCount       Int                    @default(0)
+  importedAt     DateTime               @default(now()) @onCreate(now())
+  records        AcademicPerformance[]
+
+  @@index([semester, importedAt])
+  @@map("import_batches")
+}
+
+model AcademicPerformance {
+  id                           Int         @id @default(autoincrement())
+  importBatchId                Int
+  sourceRowNumber              Int
+  organization                 String
+  suborganization              String
+  semester                     String
+  studentLastName              String
+  studentFirstName             String
+  studentPatronymic            String?
+  studentEmail                 String
+  groupName                    String
+  disciplineCode               String
+  disciplineName               String
+  teachersWhoGraded            String?
+  teachersFromWorkload         String?
+  allDisciplineTeachers        String?
+  maxDisciplinePoints          Int
+  maxPointsByTopics            Int
+  availableControlPoints       Int
+  taskAndTestPoints            Int
+  currentPointsFivePointScale  Int
+  retakePoints                 Int?
+  retakePointsNew              Int?
+  finalPoints                  Int
+  finalPointsFivePointScale    Int
+  currentDisciplinePercent     String?
+  currentStudentAveragePercent String?
+  maxAvailableControlPoints    Int
+  importBatch                  ImportBatch @relation(fields: [importBatchId], references: [id])
+
+  @@unique([importBatchId, sourceRowNumber], map: "ap_batch_row_key")
+  @@index([studentEmail, semester], map: "ap_email_semester_idx")
+  @@index([disciplineCode, semester], map: "ap_course_semester_idx")
+  @@map("academic_performance_records")
+}
