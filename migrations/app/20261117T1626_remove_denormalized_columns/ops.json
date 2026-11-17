@@ -1,0 +1,856 @@
+[
+  {
+    "id": "dropColumn.academic_performance_records.disciplineCode",
+    "label": "Drop column \"disciplineCode\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "disciplineCode",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"disciplineCode\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineCode"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"disciplineCode\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"disciplineCode\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"disciplineCode\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"disciplineCode\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineCode"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"disciplineCode\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.disciplineName",
+    "label": "Drop column \"disciplineName\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "disciplineName",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"disciplineName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineName"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"disciplineName\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"disciplineName\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"disciplineName\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"disciplineName\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineName"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"disciplineName\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.groupName",
+    "label": "Drop column \"groupName\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "groupName",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"groupName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "groupName"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"groupName\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"groupName\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"groupName\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"groupName\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "groupName"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"groupName\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.organization",
+    "label": "Drop column \"organization\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "organization",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"organization\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "organization"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"organization\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"organization\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"organization\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"organization\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "organization"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"organization\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.semester",
+    "label": "Drop column \"semester\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "semester",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"semester\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "semester"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"semester\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"semester\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"semester\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"semester\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "semester"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"semester\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.studentEmail",
+    "label": "Drop column \"studentEmail\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studentEmail",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studentEmail\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentEmail"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studentEmail\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"studentEmail\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"studentEmail\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studentEmail\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentEmail"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"studentEmail\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.studentFirstName",
+    "label": "Drop column \"studentFirstName\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studentFirstName",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studentFirstName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentFirstName"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studentFirstName\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"studentFirstName\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"studentFirstName\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studentFirstName\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentFirstName"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"studentFirstName\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.studentLastName",
+    "label": "Drop column \"studentLastName\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studentLastName",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studentLastName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentLastName"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studentLastName\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"studentLastName\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"studentLastName\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studentLastName\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentLastName"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"studentLastName\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.studentPatronymic",
+    "label": "Drop column \"studentPatronymic\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studentPatronymic",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studentPatronymic\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentPatronymic"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studentPatronymic\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"studentPatronymic\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"studentPatronymic\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studentPatronymic\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentPatronymic"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"studentPatronymic\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.academic_performance_records.suborganization",
+    "label": "Drop column \"suborganization\" from \"academic_performance_records\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suborganization",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suborganization\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "suborganization"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"suborganization\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"suborganization\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP COLUMN \"suborganization\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suborganization\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "suborganization"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"suborganization\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.disciplineId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"disciplineId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "disciplineId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"disciplineId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"disciplineId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"disciplineId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"disciplineId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "disciplineId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"disciplineId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"disciplineId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"disciplineId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "disciplineId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.organizationId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"organizationId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "organizationId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"organizationId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "organizationId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"organizationId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"organizationId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"organizationId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "organizationId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"organizationId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"organizationId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"organizationId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "organizationId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.semesterId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"semesterId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "semesterId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"semesterId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "semesterId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"semesterId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"semesterId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"semesterId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "semesterId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"semesterId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"semesterId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"semesterId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "semesterId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.studentId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"studentId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studentId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studentId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studentId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"studentId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"studentId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "studentId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"studentId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"studentId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studentId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studentId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.studyGroupId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"studyGroupId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studyGroupId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studyGroupId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studyGroupId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studyGroupId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"studyGroupId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"studyGroupId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "studyGroupId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"studyGroupId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"studyGroupId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studyGroupId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "studyGroupId",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.setNotNull.academic_performance_records.suborganizationId",
+    "label": "Set NOT NULL on \"academic_performance_records\".\"suborganizationId\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "suborganizationId",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"suborganizationId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "suborganizationId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"suborganizationId\" on \"academic_performance_records\""
+        }
+      },
+      {
+        "description": "ensure no NULL values in \"suborganizationId\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"academic_performance_records\" WHERE \"suborganizationId\" IS NULL) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "academic_performance_records",
+            "column": "suborganizationId",
+            "reason": "nullValues"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"suborganizationId\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" ALTER COLUMN \"suborganizationId\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"suborganizationId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "academic_performance_records",
+          "suborganizationId",
+          "NO"
+        ]
+      }
+    ]
+  }
+]

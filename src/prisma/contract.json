@@ -8,8 +8,32 @@
       "model": "AcademicPerformance",
       "namespace": "public"
     },
+    "disciplines": {
+      "model": "Discipline",
+      "namespace": "public"
+    },
     "import_batches": {
       "model": "ImportBatch",
+      "namespace": "public"
+    },
+    "organizations": {
+      "model": "Organization",
+      "namespace": "public"
+    },
+    "semesters": {
+      "model": "Semester",
+      "namespace": "public"
+    },
+    "students": {
+      "model": "Student",
+      "namespace": "public"
+    },
+    "study_groups": {
+      "model": "StudyGroup",
+      "namespace": "public"
+    },
+    "suborganizations": {
+      "model": "Suborganization",
       "namespace": "public"
     }
   },
@@ -54,17 +78,10 @@
                   "kind": "scalar"
                 }
               },
-              "disciplineCode": {
+              "disciplineId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "disciplineName": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -79,13 +96,6 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "groupName": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -124,10 +134,10 @@
                   "kind": "scalar"
                 }
               },
-              "organization": {
+              "organizationId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -145,10 +155,10 @@
                   "kind": "scalar"
                 }
               },
-              "semester": {
+              "semesterId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -159,38 +169,24 @@
                   "kind": "scalar"
                 }
               },
-              "studentEmail": {
+              "studentId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "studentFirstName": {
+              "studyGroupId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
-              "studentLastName": {
+              "suborganizationId": {
                 "nullable": false,
                 "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "studentPatronymic": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "suborganization": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -217,6 +213,22 @@
               }
             },
             "relations": {
+              "discipline": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "disciplineId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Discipline",
+                  "namespace": "public"
+                }
+              },
               "importBatch": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -230,6 +242,86 @@
                 },
                 "to": {
                   "model": "ImportBatch",
+                  "namespace": "public"
+                }
+              },
+              "organizationRef": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "semesterRef": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "semesterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Semester",
+                  "namespace": "public"
+                }
+              },
+              "student": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Student",
+                  "namespace": "public"
+                }
+              },
+              "studyGroup": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studyGroupId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StudyGroup",
+                  "namespace": "public"
+                }
+              },
+              "suborganizationRef": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "suborganizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Suborganization",
                   "namespace": "public"
                 }
               }
@@ -251,20 +343,14 @@
                 "currentStudentAveragePercent": {
                   "column": "currentStudentAveragePercent"
                 },
-                "disciplineCode": {
-                  "column": "disciplineCode"
-                },
-                "disciplineName": {
-                  "column": "disciplineName"
+                "disciplineId": {
+                  "column": "disciplineId"
                 },
                 "finalPoints": {
                   "column": "finalPoints"
                 },
                 "finalPointsFivePointScale": {
                   "column": "finalPointsFivePointScale"
-                },
-                "groupName": {
-                  "column": "groupName"
                 },
                 "id": {
                   "column": "id"
@@ -281,8 +367,8 @@
                 "maxPointsByTopics": {
                   "column": "maxPointsByTopics"
                 },
-                "organization": {
-                  "column": "organization"
+                "organizationId": {
+                  "column": "organizationId"
                 },
                 "retakePoints": {
                   "column": "retakePoints"
@@ -290,26 +376,20 @@
                 "retakePointsNew": {
                   "column": "retakePointsNew"
                 },
-                "semester": {
-                  "column": "semester"
+                "semesterId": {
+                  "column": "semesterId"
                 },
                 "sourceRowNumber": {
                   "column": "sourceRowNumber"
                 },
-                "studentEmail": {
-                  "column": "studentEmail"
+                "studentId": {
+                  "column": "studentId"
                 },
-                "studentFirstName": {
-                  "column": "studentFirstName"
+                "studyGroupId": {
+                  "column": "studyGroupId"
                 },
-                "studentLastName": {
-                  "column": "studentLastName"
-                },
-                "studentPatronymic": {
-                  "column": "studentPatronymic"
-                },
-                "suborganization": {
-                  "column": "suborganization"
+                "suborganizationId": {
+                  "column": "suborganizationId"
                 },
                 "taskAndTestPoints": {
                   "column": "taskAndTestPoints"
@@ -323,6 +403,89 @@
               },
               "namespaceId": "public",
               "table": "academic_performance_records"
+            }
+          },
+          "Discipline": {
+            "fields": {
+              "code": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "suborganizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "disciplineId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "suborganization": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "suborganizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Suborganization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "code": {
+                  "column": "code"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "suborganizationId": {
+                  "column": "suborganizationId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "disciplines"
             }
           },
           "ImportBatch": {
@@ -404,6 +567,368 @@
               "namespaceId": "public",
               "table": "import_batches"
             }
+          },
+          "Organization": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "suborganizations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "organizationId"
+                  ]
+                },
+                "to": {
+                  "model": "Suborganization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "organizations"
+            }
+          },
+          "Semester": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "semesterId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                }
+              },
+              "namespaceId": "public",
+              "table": "semesters"
+            }
+          },
+          "Student": {
+            "fields": {
+              "email": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "firstName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "patronymic": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studentId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "email": {
+                  "column": "email"
+                },
+                "firstName": {
+                  "column": "firstName"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "lastName": {
+                  "column": "lastName"
+                },
+                "patronymic": {
+                  "column": "patronymic"
+                }
+              },
+              "namespaceId": "public",
+              "table": "students"
+            }
+          },
+          "StudyGroup": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "suborganizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studyGroupId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "suborganization": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "suborganizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Suborganization",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "suborganizationId": {
+                  "column": "suborganizationId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "study_groups"
+            }
+          },
+          "Suborganization": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "organizationId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "disciplines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "suborganizationId"
+                  ]
+                },
+                "to": {
+                  "model": "Discipline",
+                  "namespace": "public"
+                }
+              },
+              "organization": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "organizationId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Organization",
+                  "namespace": "public"
+                }
+              },
+              "records": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "suborganizationId"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "studyGroups": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "suborganizationId"
+                  ]
+                },
+                "to": {
+                  "model": "StudyGroup",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "organizationId": {
+                  "column": "organizationId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "suborganizations"
+            }
           }
         }
       }
@@ -441,14 +966,9 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "disciplineCode": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "disciplineName": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "disciplineId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "finalPoints": {
@@ -459,11 +979,6 @@
                 "finalPointsFivePointScale": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
-                  "nullable": false
-                },
-                "groupName": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
                   "nullable": false
                 },
                 "id": {
@@ -495,9 +1010,9 @@
                   "dataType": "pg/int4",
                   "nullable": false
                 },
-                "organization": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "organizationId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "retakePoints": {
@@ -510,9 +1025,9 @@
                   "dataType": "pg/int4",
                   "nullable": true
                 },
-                "semester": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "semesterId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "sourceRowNumber": {
@@ -520,29 +1035,19 @@
                   "dataType": "pg/int4",
                   "nullable": false
                 },
-                "studentEmail": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "studentId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
-                "studentFirstName": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "studyGroupId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
-                "studentLastName": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "studentPatronymic": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                },
-                "suborganization": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "suborganizationId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "taskAndTestPoints": {
@@ -580,9 +1085,131 @@
                     "namespaceId": "public",
                     "tableName": "import_batches"
                   }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_organizationId_idx_2e17ef41"
+                  },
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizations"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_suborganizationId_idx_0edb9417"
+                  },
+                  "source": {
+                    "columns": [
+                      "suborganizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "suborganizations"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_semesterId_idx_c8bca8d0"
+                  },
+                  "source": {
+                    "columns": [
+                      "semesterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "semesters"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_studentId_idx_bf255322"
+                  },
+                  "source": {
+                    "columns": [
+                      "studentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "students"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_studyGroupId_idx_b7300630"
+                  },
+                  "source": {
+                    "columns": [
+                      "studyGroupId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "study_groups"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "academic_performance_records_disciplineId_idx_e8c0205f"
+                  },
+                  "source": {
+                    "columns": [
+                      "disciplineId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disciplines"
+                  }
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "disciplineId"
+                  ],
+                  "name": "academic_performance_records_disciplineId_idx_e8c0205f",
+                  "prefix": "academic_performance_records_disciplineId_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "importBatchId"
@@ -593,18 +1220,58 @@
                 },
                 {
                   "columns": [
-                    "disciplineCode",
-                    "semester"
+                    "organizationId"
                   ],
-                  "name": "ap_course_semester_idx",
+                  "name": "academic_performance_records_organizationId_idx_2e17ef41",
+                  "prefix": "academic_performance_records_organizationId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
-                    "studentEmail",
-                    "semester"
+                    "semesterId"
                   ],
-                  "name": "ap_email_semester_idx",
+                  "name": "academic_performance_records_semesterId_idx_c8bca8d0",
+                  "prefix": "academic_performance_records_semesterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentId"
+                  ],
+                  "name": "academic_performance_records_studentId_idx_bf255322",
+                  "prefix": "academic_performance_records_studentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studyGroupId"
+                  ],
+                  "name": "academic_performance_records_studyGroupId_idx_b7300630",
+                  "prefix": "academic_performance_records_studyGroupId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "suborganizationId"
+                  ],
+                  "name": "academic_performance_records_suborganizationId_idx_0edb9417",
+                  "prefix": "academic_performance_records_suborganizationId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "disciplineId",
+                    "semesterId"
+                  ],
+                  "name": "ap_discipline_semester_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentId",
+                    "semesterId"
+                  ],
+                  "name": "ap_student_semester_idx",
                   "unique": false
                 }
               ],
@@ -620,6 +1287,79 @@
                     "sourceRowNumber"
                   ],
                   "name": "ap_batch_row_key"
+                }
+              ]
+            },
+            "disciplines": {
+              "columns": {
+                "code": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "suborganizationId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "disciplines_suborganizationId_idx_0edb9417"
+                  },
+                  "source": {
+                    "columns": [
+                      "suborganizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disciplines"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "suborganizations"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "suborganizationId"
+                  ],
+                  "name": "disciplines_suborganizationId_idx_0edb9417",
+                  "prefix": "disciplines_suborganizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "suborganizationId",
+                    "code",
+                    "name"
+                  ]
                 }
               ]
             },
@@ -684,6 +1424,251 @@
                 ]
               },
               "uniques": []
+            },
+            "organizations": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "semesters": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "students": {
+              "columns": {
+                "email": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "firstName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "lastName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "patronymic": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "email"
+                  ]
+                }
+              ]
+            },
+            "study_groups": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "suborganizationId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "study_groups_suborganizationId_idx_0edb9417"
+                  },
+                  "source": {
+                    "columns": [
+                      "suborganizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "study_groups"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "suborganizations"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "suborganizationId"
+                  ],
+                  "name": "study_groups_suborganizationId_idx_0edb9417",
+                  "prefix": "study_groups_suborganizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "suborganizationId",
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "suborganizations": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "organizationId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "suborganizations_organizationId_idx_2e17ef41"
+                  },
+                  "source": {
+                    "columns": [
+                      "organizationId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "suborganizations"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "organizations"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "organizationId"
+                  ],
+                  "name": "suborganizations_organizationId_idx_2e17ef41",
+                  "prefix": "suborganizations_organizationId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "organizationId",
+                    "name"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -691,7 +1676,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "e08bfbcda0e265e1228d54f9712805c87408adcbc589eda890717d9a36b0712a"
+    "storageHash": "87817ca322c093fad0e51d443f9137234191785b39b30ad54f65e1b604b26d5e"
   },
   "execution": {
     "executionHash": "aa8f401b4a47fe8dddeb01fde7e4a1379a14a8e5847e2639e62598991947b74e",

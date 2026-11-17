@@ -12,20 +12,80 @@ model ImportBatch {
   @@map("import_batches")
 }
 
+model Organization {
+  id               Int               @id @default(autoincrement())
+  name             String            @unique
+  suborganizations Suborganization[]
+  records          AcademicPerformance[]
+
+  @@map("organizations")
+}
+
+model Suborganization {
+  id             Int               @id @default(autoincrement())
+  name           String
+  organizationId Int
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  records        AcademicPerformance[]
+  studyGroups    StudyGroup[]
+  disciplines    Discipline[]
+
+  @@unique([organizationId, name])
+  @@map("suborganizations")
+}
+
+model Semester {
+  id      Int                    @id @default(autoincrement())
+  name    String                 @unique
+  records AcademicPerformance[]
+
+  @@map("semesters")
+}
+
+model Student {
+  id          Int                    @id @default(autoincrement())
+  email       String                 @unique
+  lastName    String
+  firstName   String
+  patronymic String?
+  records     AcademicPerformance[]
+
+  @@map("students")
+}
+
+model StudyGroup {
+  id                 Int                    @id @default(autoincrement())
+  name               String
+  suborganizationId  Int
+  suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
+  records            AcademicPerformance[]
+
+  @@unique([suborganizationId, name])
+  @@map("study_groups")
+}
+
+model Discipline {
+  id                 Int                    @id @default(autoincrement())
+  code               String
+  name               String
+  suborganizationId  Int
+  suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
+  records            AcademicPerformance[]
+
+  @@unique([suborganizationId, code, name])
+  @@map("disciplines")
+}
+
 model AcademicPerformance {
   id                           Int         @id @default(autoincrement())
   importBatchId                Int
   sourceRowNumber              Int
-  organization                 String
-  suborganization              String
-  semester                     String
-  studentLastName              String
-  studentFirstName             String
-  studentPatronymic            String?
-  studentEmail                 String
-  groupName                    String
-  disciplineCode               String
-  disciplineName               String
+  organizationId               Int
+  suborganizationId            Int
+  semesterId                   Int
+  studentId                    Int
+  studyGroupId                 Int
+  disciplineId                 Int
   teachersWhoGraded            String?
   teachersFromWorkload         String?
   allDisciplineTeachers        String?
@@ -41,10 +101,16 @@ model AcademicPerformance {
   currentDisciplinePercent     String?
   currentStudentAveragePercent String?
   maxAvailableControlPoints    Int
-  importBatch                  ImportBatch @relation(fields: [importBatchId], references: [id])
+  importBatch                  ImportBatch    @relation(fields: [importBatchId], references: [id])
+  organizationRef              Organization    @relation(fields: [organizationId], references: [id])
+  suborganizationRef           Suborganization @relation(fields: [suborganizationId], references: [id])
+  semesterRef                  Semester        @relation(fields: [semesterId], references: [id])
+  student                      Student         @relation(fields: [studentId], references: [id])
+  studyGroup                   StudyGroup      @relation(fields: [studyGroupId], references: [id])
+  discipline                   Discipline      @relation(fields: [disciplineId], references: [id])
 
   @@unique([importBatchId, sourceRowNumber], map: "ap_batch_row_key")
-  @@index([studentEmail, semester], map: "ap_email_semester_idx")
-  @@index([disciplineCode, semester], map: "ap_course_semester_idx")
+  @@index([studentId, semesterId], map: "ap_student_semester_idx")
+  @@index([disciplineId, semesterId], map: "ap_discipline_semester_idx")
   @@map("academic_performance_records")
 }
