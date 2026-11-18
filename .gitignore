@@ -1,3 +1,4 @@
 node_modules/
 dist/
 .env
+PROJECT_CONTEXT_FOR_GPT.md

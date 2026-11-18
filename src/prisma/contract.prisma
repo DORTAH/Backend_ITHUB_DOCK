@@ -42,6 +42,7 @@ model Semester {
   studentLicenses StudentLicense[]
   attestationCommissions AttestationCommission[]
   studentEnrollments StudentEnrollment[]
+  teachingAssignments EmployeeDisciplineAssignment[]
 
   @@map("semesters")
 }
@@ -52,6 +53,8 @@ model Student {
   lastName    String
   firstName   String
   patronymic String?
+  admissionBase Int?
+  admissionYear Int?
   records     AcademicPerformance[]
   licenseAssignments StudentLicense[]
   enrollments StudentEnrollment[]
@@ -64,8 +67,10 @@ model StudyGroup {
   name               String
   suborganizationId  Int
   studyProgramId     Int?
+  studyPlanId        Int?
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
   studyProgram       StudyProgram?           @relation(fields: [studyProgramId], references: [id])
+  studyPlan          StudyPlan?               @relation(fields: [studyPlanId], references: [id])
   records            AcademicPerformance[]
   attestationCommissions AttestationCommission[]
   studentEnrollments StudentEnrollment[]
@@ -84,6 +89,7 @@ model StudyProgram {
   groups             StudyGroup[]
   fgosDisciplines    FgosDiscipline[]
   attestationCommissions AttestationCommission[]
+  studyPlans         StudyPlan[]
 
   @@unique([suborganizationId, specialtyCode])
   @@map("study_programs")
@@ -98,6 +104,7 @@ model Discipline {
   records            AcademicPerformance[]
   fgosMappings       FgosDisciplineMapping[]
   attestationCommissions AttestationCommission[]
+  teachingAssignments EmployeeDisciplineAssignment[]
 
   @@unique([suborganizationId, code, name])
   @@map("disciplines")
@@ -110,6 +117,7 @@ model FgosDiscipline {
   name           String
   studyProgram   StudyProgram           @relation(fields: [studyProgramId], references: [id])
   mappings       FgosDisciplineMapping[]
+  studyPlanItems StudyPlanItem[]
 
   @@unique([studyProgramId, code, name])
   @@map("fgos_disciplines")
@@ -124,6 +132,63 @@ model FgosDisciplineMapping {
 
   @@unique([disciplineId, fgosDisciplineId])
   @@map("fgos_discipline_mappings")
+}
+
+// Учебный план уникален для программы и года/базы поступления.
+// Для поступивших после 9 класса обычно 8 семестров, после 11 класса — 6.
+model StudyPlan {
+  id             Int                  @id @default(autoincrement())
+  studyProgramId Int
+  admissionBase  Int
+  admissionYear  Int
+  planAcademicYear String?
+  name           String?
+  sourceFileName String?
+  studyProgram   StudyProgram         @relation(fields: [studyProgramId], references: [id])
+  groups         StudyGroup[]
+  semesters      StudyPlanSemester[]
+  items          StudyPlanItem[]
+
+  @@unique([studyProgramId, admissionBase, admissionYear], map: "study_plan_program_cohort_key")
+  @@map("study_plans")
+}
+
+model StudyPlanSemester {
+  id                   Int                           @id @default(autoincrement())
+  studyPlanId          Int
+  number               Int
+  studyPlan            StudyPlan                     @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  assessments          StudyPlanAssessment[]
+  teachingAssignments EmployeeDisciplineAssignment[]
+
+  @@unique([studyPlanId, number], map: "study_plan_semester_number_key")
+  @@map("study_plan_semesters")
+}
+
+model StudyPlanItem {
+  id               Int                    @id @default(autoincrement())
+  studyPlanId      Int
+  indexCode        String
+  name             String
+  fgosDisciplineId Int?
+  studyPlan        StudyPlan              @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  fgosDiscipline   FgosDiscipline?        @relation(fields: [fgosDisciplineId], references: [id])
+  assessments      StudyPlanAssessment[]
+
+  @@unique([studyPlanId, indexCode], map: "study_plan_item_index_key")
+  @@map("study_plan_items")
+}
+
+model StudyPlanAssessment {
+  id                  Int               @id @default(autoincrement())
+  studyPlanItemId     Int
+  studyPlanSemesterId Int
+  controlForm         String
+  studyPlanItem       StudyPlanItem     @relation(fields: [studyPlanItemId], references: [id], onDelete: Cascade)
+  studyPlanSemester   StudyPlanSemester @relation(fields: [studyPlanSemesterId], references: [id], onDelete: Cascade)
+
+  @@unique([studyPlanItemId, studyPlanSemesterId, controlForm], map: "study_plan_assessment_key")
+  @@map("study_plan_assessments")
 }
 
 // Состав комиссии для ведомости/документа за конкретный период и группу.
@@ -156,6 +221,41 @@ model AttestationCommissionMember {
 
   @@index([commissionId, sortOrder], map: "att_comm_member_order_idx")
   @@map("attestation_commission_members")
+}
+
+model Employee {
+  id                  Int                           @id @default(autoincrement())
+  fullName            String
+  positions           EmployeePosition[]
+  teachingAssignments EmployeeDisciplineAssignment[]
+
+  @@map("employees")
+}
+
+model EmployeePosition {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  title      String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, title], map: "employee_position_key")
+  @@map("employee_positions")
+}
+
+model EmployeeDisciplineAssignment {
+  id                  Int                @id @default(autoincrement())
+  employeeId          Int
+  disciplineId        Int
+  studyPlanSemesterId Int?
+  semesterId          Int?
+  employee            Employee           @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  discipline          Discipline         @relation(fields: [disciplineId], references: [id])
+  studyPlanSemester   StudyPlanSemester? @relation(fields: [studyPlanSemesterId], references: [id])
+  semester            Semester?          @relation(fields: [semesterId], references: [id])
+
+  @@index([disciplineId, semesterId], map: "employee_discipline_semester_idx")
+  @@index([employeeId, studyPlanSemesterId], map: "employee_plan_semester_idx")
+  @@map("employee_discipline_assignments")
 }
 
 model License {
