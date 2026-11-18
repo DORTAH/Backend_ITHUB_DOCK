@@ -65,12 +65,14 @@ model Student {
 model StudyGroup {
   id                 Int                    @id @default(autoincrement())
   name               String
-  suborganizationId  Int
-  studyProgramId     Int?
-  studyPlanId        Int?
+  suborganizationId  Int                    @map("suborganization_id")
+  studyProgramId     Int?                   @map("study_program_id")
+  studyPlanId        Int?                   @map("study_plan_id")
+  
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
-  studyProgram       StudyProgram?           @relation(fields: [studyProgramId], references: [id])
-  studyPlan          StudyPlan?               @relation(fields: [studyPlanId], references: [id])
+  studyProgram       StudyProgram?          @relation(fields: [studyProgramId], references: [id])
+  studyPlan          StudyPlan?             @relation(fields: [studyPlanId], references: [id])
+  
   records            AcademicPerformance[]
   attestationCommissions AttestationCommission[]
   studentEnrollments StudentEnrollment[]
@@ -117,7 +119,7 @@ model FgosDiscipline {
   name           String
   studyProgram   StudyProgram           @relation(fields: [studyProgramId], references: [id])
   mappings       FgosDisciplineMapping[]
-  studyPlanItems StudyPlanItem[]
+  studyPlanDisciplines StudyPlanDiscipline[]
 
   @@unique([studyProgramId, code, name])
   @@map("fgos_disciplines")
@@ -141,13 +143,11 @@ model StudyPlan {
   studyProgramId Int
   admissionBase  Int
   admissionYear  Int
-  planAcademicYear String?
   name           String?
   sourceFileName String?
   studyProgram   StudyProgram         @relation(fields: [studyProgramId], references: [id])
   groups         StudyGroup[]
   semesters      StudyPlanSemester[]
-  items          StudyPlanItem[]
 
   @@unique([studyProgramId, admissionBase, admissionYear], map: "study_plan_program_cohort_key")
   @@map("study_plans")
@@ -158,37 +158,24 @@ model StudyPlanSemester {
   studyPlanId          Int
   number               Int
   studyPlan            StudyPlan                     @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
-  assessments          StudyPlanAssessment[]
+  disciplines          StudyPlanDiscipline[]
   teachingAssignments EmployeeDisciplineAssignment[]
 
   @@unique([studyPlanId, number], map: "study_plan_semester_number_key")
   @@map("study_plan_semesters")
 }
 
-model StudyPlanItem {
-  id               Int                    @id @default(autoincrement())
-  studyPlanId      Int
-  indexCode        String
-  name             String
-  fgosDisciplineId Int?
-  studyPlan        StudyPlan              @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
-  fgosDiscipline   FgosDiscipline?        @relation(fields: [fgosDisciplineId], references: [id])
-  assessments      StudyPlanAssessment[]
-
-  @@unique([studyPlanId, indexCode], map: "study_plan_item_index_key")
-  @@map("study_plan_items")
-}
-
-model StudyPlanAssessment {
+model StudyPlanDiscipline {
   id                  Int               @id @default(autoincrement())
-  studyPlanItemId     Int
   studyPlanSemesterId Int
-  controlForm         String
-  studyPlanItem       StudyPlanItem     @relation(fields: [studyPlanItemId], references: [id], onDelete: Cascade)
+  fgosDisciplineId    Int
+  controlForm         String?
+  plannedHours        Int?
   studyPlanSemester   StudyPlanSemester @relation(fields: [studyPlanSemesterId], references: [id], onDelete: Cascade)
+  fgosDiscipline      FgosDiscipline    @relation(fields: [fgosDisciplineId], references: [id])
 
-  @@unique([studyPlanItemId, studyPlanSemesterId, controlForm], map: "study_plan_assessment_key")
-  @@map("study_plan_assessments")
+  @@unique([studyPlanSemesterId, fgosDisciplineId], map: "study_plan_discipline_key")
+  @@map("study_plan_disciplines")
 }
 
 // Состав комиссии для ведомости/документа за конкретный период и группу.

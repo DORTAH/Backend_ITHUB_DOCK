@@ -72,12 +72,8 @@
       "model": "StudyGroup",
       "namespace": "public"
     },
-    "study_plan_assessments": {
-      "model": "StudyPlanAssessment",
-      "namespace": "public"
-    },
-    "study_plan_items": {
-      "model": "StudyPlanItem",
+    "study_plan_disciplines": {
+      "model": "StudyPlanDiscipline",
       "namespace": "public"
     },
     "study_plan_semesters": {
@@ -1115,7 +1111,7 @@
                   "namespace": "public"
                 }
               },
-              "studyPlanItems": {
+              "studyPlanDisciplines": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -1126,7 +1122,7 @@
                   ]
                 },
                 "to": {
-                  "model": "StudyPlanItem",
+                  "model": "StudyPlanDiscipline",
                   "namespace": "public"
                 }
               },
@@ -2025,13 +2021,13 @@
                   "column": "name"
                 },
                 "studyPlanId": {
-                  "column": "studyPlanId"
+                  "column": "study_plan_id"
                 },
                 "studyProgramId": {
-                  "column": "studyProgramId"
+                  "column": "study_program_id"
                 },
                 "suborganizationId": {
-                  "column": "suborganizationId"
+                  "column": "suborganization_id"
                 }
               },
               "namespaceId": "public",
@@ -2099,21 +2095,6 @@
                   "namespace": "public"
                 }
               },
-              "items": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanItem",
-                  "namespace": "public"
-                }
-              },
               "semesters": {
                 "cardinality": "1:N",
                 "on": {
@@ -2171,12 +2152,19 @@
               "table": "study_plans"
             }
           },
-          "StudyPlanAssessment": {
+          "StudyPlanDiscipline": {
             "fields": {
               "controlForm": {
-                "nullable": false,
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fgosDisciplineId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
               },
@@ -2187,8 +2175,8 @@
                   "kind": "scalar"
                 }
               },
-              "studyPlanItemId": {
-                "nullable": false,
+              "plannedHours": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
@@ -2203,19 +2191,19 @@
               }
             },
             "relations": {
-              "studyPlanItem": {
+              "fgosDiscipline": {
                 "cardinality": "N:1",
                 "nullable": false,
                 "on": {
                   "localFields": [
-                    "studyPlanItemId"
+                    "fgosDisciplineId"
                   ],
                   "targetFields": [
                     "id"
                   ]
                 },
                 "to": {
-                  "model": "StudyPlanItem",
+                  "model": "FgosDiscipline",
                   "namespace": "public"
                 }
               },
@@ -2241,127 +2229,21 @@
                 "controlForm": {
                   "column": "controlForm"
                 },
-                "id": {
-                  "column": "id"
-                },
-                "studyPlanItemId": {
-                  "column": "studyPlanItemId"
-                },
-                "studyPlanSemesterId": {
-                  "column": "studyPlanSemesterId"
-                }
-              },
-              "namespaceId": "public",
-              "table": "study_plan_assessments"
-            }
-          },
-          "StudyPlanItem": {
-            "fields": {
-              "fgosDisciplineId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "indexCode": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "name": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "studyPlanId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "assessments": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanItemId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanAssessment",
-                  "namespace": "public"
-                }
-              },
-              "fgosDiscipline": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "fgosDisciplineId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "FgosDiscipline",
-                  "namespace": "public"
-                }
-              },
-              "studyPlan": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "studyPlanId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlan",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
                 "fgosDisciplineId": {
                   "column": "fgosDisciplineId"
                 },
                 "id": {
                   "column": "id"
                 },
-                "indexCode": {
-                  "column": "indexCode"
+                "plannedHours": {
+                  "column": "plannedHours"
                 },
-                "name": {
-                  "column": "name"
-                },
-                "studyPlanId": {
-                  "column": "studyPlanId"
+                "studyPlanSemesterId": {
+                  "column": "studyPlanSemesterId"
                 }
               },
               "namespaceId": "public",
-              "table": "study_plan_items"
+              "table": "study_plan_disciplines"
             }
           },
           "StudyPlanSemester": {
@@ -2389,7 +2271,7 @@
               }
             },
             "relations": {
-              "assessments": {
+              "disciplines": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -2400,7 +2282,7 @@
                   ]
                 },
                 "to": {
-                  "model": "StudyPlanAssessment",
+                  "model": "StudyPlanDiscipline",
                   "namespace": "public"
                 }
               },
@@ -4328,17 +4210,17 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "studyPlanId": {
+                "study_plan_id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
                 },
-                "studyProgramId": {
+                "study_program_id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
                 },
-                "suborganizationId": {
+                "suborganization_id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
@@ -4347,11 +4229,11 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "study_groups_suborganizationId_idx_0edb9417"
+                    "name": "study_groups_suborganization_id_idx_a016913b"
                   },
                   "source": {
                     "columns": [
-                      "suborganizationId"
+                      "suborganization_id"
                     ],
                     "namespaceId": "public",
                     "tableName": "study_groups"
@@ -4366,11 +4248,11 @@
                 },
                 {
                   "index": {
-                    "name": "study_groups_studyProgramId_idx_4b5996c5"
+                    "name": "study_groups_study_program_id_idx_cdb5c4cf"
                   },
                   "source": {
                     "columns": [
-                      "studyProgramId"
+                      "study_program_id"
                     ],
                     "namespaceId": "public",
                     "tableName": "study_groups"
@@ -4385,11 +4267,11 @@
                 },
                 {
                   "index": {
-                    "name": "study_groups_studyPlanId_idx_5ee30651"
+                    "name": "study_groups_study_plan_id_idx_07733d24"
                   },
                   "source": {
                     "columns": [
-                      "studyPlanId"
+                      "study_plan_id"
                     ],
                     "namespaceId": "public",
                     "tableName": "study_groups"
@@ -4406,26 +4288,26 @@
               "indexes": [
                 {
                   "columns": [
-                    "studyPlanId"
+                    "study_plan_id"
                   ],
-                  "name": "study_groups_studyPlanId_idx_5ee30651",
-                  "prefix": "study_groups_studyPlanId_idx",
+                  "name": "study_groups_study_plan_id_idx_07733d24",
+                  "prefix": "study_groups_study_plan_id_idx",
                   "unique": false
                 },
                 {
                   "columns": [
-                    "studyProgramId"
+                    "study_program_id"
                   ],
-                  "name": "study_groups_studyProgramId_idx_4b5996c5",
-                  "prefix": "study_groups_studyProgramId_idx",
+                  "name": "study_groups_study_program_id_idx_cdb5c4cf",
+                  "prefix": "study_groups_study_program_id_idx",
                   "unique": false
                 },
                 {
                   "columns": [
-                    "suborganizationId"
+                    "suborganization_id"
                   ],
-                  "name": "study_groups_suborganizationId_idx_0edb9417",
-                  "prefix": "study_groups_suborganizationId_idx",
+                  "name": "study_groups_suborganization_id_idx_a016913b",
+                  "prefix": "study_groups_suborganization_id_idx",
                   "unique": false
                 }
               ],
@@ -4437,17 +4319,22 @@
               "uniques": [
                 {
                   "columns": [
-                    "suborganizationId",
+                    "suborganization_id",
                     "name"
                   ]
                 }
               ]
             },
-            "study_plan_assessments": {
+            "study_plan_disciplines": {
               "columns": {
                 "controlForm": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": true
+                },
+                "fgosDisciplineId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 },
                 "id": {
@@ -4459,10 +4346,10 @@
                   },
                   "nullable": false
                 },
-                "studyPlanItemId": {
+                "plannedHours": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
-                  "nullable": false
+                  "nullable": true
                 },
                 "studyPlanSemesterId": {
                   "codecId": "pg/int4@1",
@@ -4473,27 +4360,7 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "study_plan_assessments_studyPlanItemId_idx_e0b6c586"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "studyPlanItemId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_assessments"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_items"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "study_plan_assessments_studyPlanSemesterId_idx_53cb93a2"
+                    "name": "study_plan_disciplines_studyPlanSemesterId_idx_53cb93a2"
                   },
                   "onDelete": "cascade",
                   "source": {
@@ -4501,7 +4368,7 @@
                       "studyPlanSemesterId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "study_plan_assessments"
+                    "tableName": "study_plan_disciplines"
                   },
                   "target": {
                     "columns": [
@@ -4510,105 +4377,17 @@
                     "namespaceId": "public",
                     "tableName": "study_plan_semesters"
                   }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "studyPlanItemId"
-                  ],
-                  "name": "study_plan_assessments_studyPlanItemId_idx_e0b6c586",
-                  "prefix": "study_plan_assessments_studyPlanItemId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "studyPlanSemesterId"
-                  ],
-                  "name": "study_plan_assessments_studyPlanSemesterId_idx_53cb93a2",
-                  "prefix": "study_plan_assessments_studyPlanSemesterId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": [
-                {
-                  "columns": [
-                    "studyPlanItemId",
-                    "studyPlanSemesterId",
-                    "controlForm"
-                  ],
-                  "name": "study_plan_assessment_key"
-                }
-              ]
-            },
-            "study_plan_items": {
-              "columns": {
-                "fgosDisciplineId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": true
-                },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
-                  "nullable": false
-                },
-                "indexCode": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "studyPlanId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "study_plan_items_studyPlanId_idx_5ee30651"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "studyPlanId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_items"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plans"
-                  }
                 },
                 {
                   "index": {
-                    "name": "study_plan_items_fgosDisciplineId_idx_94293b20"
+                    "name": "study_plan_disciplines_fgosDisciplineId_idx_94293b20"
                   },
                   "source": {
                     "columns": [
                       "fgosDisciplineId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "study_plan_items"
+                    "tableName": "study_plan_disciplines"
                   },
                   "target": {
                     "columns": [
@@ -4624,16 +4403,16 @@
                   "columns": [
                     "fgosDisciplineId"
                   ],
-                  "name": "study_plan_items_fgosDisciplineId_idx_94293b20",
-                  "prefix": "study_plan_items_fgosDisciplineId_idx",
+                  "name": "study_plan_disciplines_fgosDisciplineId_idx_94293b20",
+                  "prefix": "study_plan_disciplines_fgosDisciplineId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
-                    "studyPlanId"
+                    "studyPlanSemesterId"
                   ],
-                  "name": "study_plan_items_studyPlanId_idx_5ee30651",
-                  "prefix": "study_plan_items_studyPlanId_idx",
+                  "name": "study_plan_disciplines_studyPlanSemesterId_idx_53cb93a2",
+                  "prefix": "study_plan_disciplines_studyPlanSemesterId_idx",
                   "unique": false
                 }
               ],
@@ -4645,10 +4424,10 @@
               "uniques": [
                 {
                   "columns": [
-                    "studyPlanId",
-                    "indexCode"
+                    "studyPlanSemesterId",
+                    "fgosDisciplineId"
                   ],
-                  "name": "study_plan_item_index_key"
+                  "name": "study_plan_discipline_key"
                 }
               ]
             },
@@ -4955,7 +4734,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "99d0eaa8638305a6ab3c48f27ea1e99b4b0450806867694ea34c6a8ee1591ea0"
+    "storageHash": "ca2e954e1af16b073300d2ec55c98491667e880739065f4c37181a7cc1feb879"
   },
   "execution": {
     "executionHash": "aa8f401b4a47fe8dddeb01fde7e4a1379a14a8e5847e2639e62598991947b74e",
