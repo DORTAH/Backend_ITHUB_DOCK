@@ -10,6 +10,11 @@ function createLookup<T>() {
   return new Map<string, T>();
 }
 
+function academicYearFromSemester(semester: string): string | null {
+  const match = semester.match(/(?:^|\s)(\d{2})[-/](\d{2})(?:\s|$)/);
+  return match ? `20${match[1]}/20${match[2]}` : null;
+}
+
 export type ImportResult = {
   batchId: number;
   sourceFileName: string;
@@ -42,6 +47,7 @@ export async function importExcel(filePath: string, originalName: string): Promi
     const students = createLookup<number>();
     const groups = createLookup<number>();
     const disciplines = createLookup<number>();
+    const enrollments = new Set<string>();
 
     const resolveId = async <T extends { id: number }>(
       cache: Map<string, number>,
@@ -91,6 +97,29 @@ export async function importExcel(filePath: string, originalName: string): Promi
         () => tx.orm.public.StudyGroup.where({ suborganizationId, name: row.groupName }).first(),
         () => tx.orm.public.StudyGroup.create({ suborganizationId, name: row.groupName }),
       );
+      const enrollmentKey = `${studentId}\u0000${semesterId}`;
+      if (!enrollments.has(enrollmentKey)) {
+        const academicYear = academicYearFromSemester(row.semester);
+        const existingEnrollment = await tx.orm.public.StudentEnrollment
+          .where({ studentId, semesterId })
+          .first();
+
+        if (existingEnrollment) {
+          if (existingEnrollment.studyGroupId !== groupId || existingEnrollment.academicYear !== academicYear) {
+            await tx.orm.public.StudentEnrollment
+              .where({ id: existingEnrollment.id })
+              .update({ studyGroupId: groupId, academicYear });
+          }
+        } else {
+          await tx.orm.public.StudentEnrollment.create({
+            studentId,
+            semesterId,
+            studyGroupId: groupId,
+            academicYear,
+          });
+        }
+        enrollments.add(enrollmentKey);
+      }
       const disciplineKey = `${suborganizationId}\u0000${row.disciplineCode}\u0000${row.disciplineName}`;
       const disciplineId = await resolveId(
         disciplines, disciplineKey,

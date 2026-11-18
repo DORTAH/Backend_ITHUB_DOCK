@@ -8,6 +8,14 @@
       "model": "AcademicPerformance",
       "namespace": "public"
     },
+    "attestation_commission_members": {
+      "model": "AttestationCommissionMember",
+      "namespace": "public"
+    },
+    "attestation_commissions": {
+      "model": "AttestationCommission",
+      "namespace": "public"
+    },
     "disciplines": {
       "model": "Discipline",
       "namespace": "public"
@@ -34,6 +42,10 @@
     },
     "semesters": {
       "model": "Semester",
+      "namespace": "public"
+    },
+    "student_enrollments": {
+      "model": "StudentEnrollment",
       "namespace": "public"
     },
     "student_licenses": {
@@ -425,6 +437,235 @@
               "table": "academic_performance_records"
             }
           },
+          "AttestationCommission": {
+            "fields": {
+              "disciplineId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studyGroupId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studyProgramId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "discipline": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "disciplineId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Discipline",
+                  "namespace": "public"
+                }
+              },
+              "members": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "commissionId"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommissionMember",
+                  "namespace": "public"
+                }
+              },
+              "semester": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "semesterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Semester",
+                  "namespace": "public"
+                }
+              },
+              "studyGroup": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "studyGroupId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StudyGroup",
+                  "namespace": "public"
+                }
+              },
+              "studyProgram": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studyProgramId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StudyProgram",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "disciplineId": {
+                  "column": "disciplineId"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "semesterId": {
+                  "column": "semesterId"
+                },
+                "studyGroupId": {
+                  "column": "studyGroupId"
+                },
+                "studyProgramId": {
+                  "column": "studyProgramId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "attestation_commissions"
+            }
+          },
+          "AttestationCommissionMember": {
+            "fields": {
+              "commissionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "fullName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "position": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sortOrder": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "commission": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "commissionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommission",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "commissionId": {
+                  "column": "commissionId"
+                },
+                "fullName": {
+                  "column": "fullName"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "position": {
+                  "column": "position"
+                },
+                "role": {
+                  "column": "role"
+                },
+                "sortOrder": {
+                  "column": "sortOrder"
+                }
+              },
+              "namespaceId": "public",
+              "table": "attestation_commission_members"
+            }
+          },
           "Discipline": {
             "fields": {
               "code": {
@@ -457,6 +698,21 @@
               }
             },
             "relations": {
+              "attestationCommissions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "disciplineId"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommission",
+                  "namespace": "public"
+                }
+              },
               "fgosMappings": {
                 "cardinality": "1:N",
                 "on": {
@@ -887,6 +1143,21 @@
               }
             },
             "relations": {
+              "attestationCommissions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "semesterId"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommission",
+                  "namespace": "public"
+                }
+              },
               "records": {
                 "cardinality": "1:N",
                 "on": {
@@ -899,6 +1170,21 @@
                 },
                 "to": {
                   "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "studentEnrollments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "semesterId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentEnrollment",
                   "namespace": "public"
                 }
               },
@@ -970,6 +1256,21 @@
               }
             },
             "relations": {
+              "enrollments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studentId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentEnrollment",
+                  "namespace": "public"
+                }
+              },
               "licenseAssignments": {
                 "cardinality": "1:N",
                 "on": {
@@ -1021,6 +1322,126 @@
               },
               "namespaceId": "public",
               "table": "students"
+            }
+          },
+          "StudentEnrollment": {
+            "fields": {
+              "academicYear": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "courseNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studyGroupId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "semester": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "semesterId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Semester",
+                  "namespace": "public"
+                }
+              },
+              "student": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Student",
+                  "namespace": "public"
+                }
+              },
+              "studyGroup": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studyGroupId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StudyGroup",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "academicYear": {
+                  "column": "academicYear"
+                },
+                "courseNumber": {
+                  "column": "courseNumber"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "semesterId": {
+                  "column": "semesterId"
+                },
+                "studentId": {
+                  "column": "studentId"
+                },
+                "studyGroupId": {
+                  "column": "studyGroupId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "student_enrollments"
             }
           },
           "StudentLicense": {
@@ -1155,6 +1576,21 @@
               }
             },
             "relations": {
+              "attestationCommissions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studyGroupId"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommission",
+                  "namespace": "public"
+                }
+              },
               "records": {
                 "cardinality": "1:N",
                 "on": {
@@ -1167,6 +1603,21 @@
                 },
                 "to": {
                   "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "studentEnrollments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studyGroupId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentEnrollment",
                   "namespace": "public"
                 }
               },
@@ -1261,6 +1712,21 @@
               }
             },
             "relations": {
+              "attestationCommissions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studyProgramId"
+                  ]
+                },
+                "to": {
+                  "model": "AttestationCommission",
+                  "namespace": "public"
+                }
+              },
               "fgosDisciplines": {
                 "cardinality": "1:N",
                 "on": {
@@ -1808,6 +2274,261 @@
                 }
               ]
             },
+            "attestation_commission_members": {
+              "columns": {
+                "commissionId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "fullName": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "position": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "sortOrder": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "attestation_commission_members_commissionId_idx_5ca7b813"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "commissionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commission_members"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commissions"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "commissionId",
+                    "sortOrder"
+                  ],
+                  "name": "att_comm_member_order_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "commissionId"
+                  ],
+                  "name": "attestation_commission_members_commissionId_idx_5ca7b813",
+                  "prefix": "attestation_commission_members_commissionId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
+            "attestation_commissions": {
+              "columns": {
+                "disciplineId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "semesterId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "studyGroupId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "studyProgramId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "attestation_commissions_studyProgramId_idx_4b5996c5"
+                  },
+                  "source": {
+                    "columns": [
+                      "studyProgramId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commissions"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "study_programs"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "attestation_commissions_semesterId_idx_c8bca8d0"
+                  },
+                  "source": {
+                    "columns": [
+                      "semesterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commissions"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "semesters"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "attestation_commissions_studyGroupId_idx_b7300630"
+                  },
+                  "source": {
+                    "columns": [
+                      "studyGroupId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commissions"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "study_groups"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "attestation_commissions_disciplineId_idx_e8c0205f"
+                  },
+                  "source": {
+                    "columns": [
+                      "disciplineId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "attestation_commissions"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disciplines"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "studyGroupId",
+                    "semesterId"
+                  ],
+                  "name": "att_comm_group_sem_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studyProgramId",
+                    "semesterId"
+                  ],
+                  "name": "att_comm_prog_sem_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "disciplineId"
+                  ],
+                  "name": "attestation_commissions_disciplineId_idx_e8c0205f",
+                  "prefix": "attestation_commissions_disciplineId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "semesterId"
+                  ],
+                  "name": "attestation_commissions_semesterId_idx_c8bca8d0",
+                  "prefix": "attestation_commissions_semesterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studyGroupId"
+                  ],
+                  "name": "attestation_commissions_studyGroupId_idx_b7300630",
+                  "prefix": "attestation_commissions_studyGroupId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studyProgramId"
+                  ],
+                  "name": "attestation_commissions_studyProgramId_idx_4b5996c5",
+                  "prefix": "attestation_commissions_studyProgramId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "disciplines": {
               "columns": {
                 "code": {
@@ -2203,6 +2924,151 @@
                   "columns": [
                     "name"
                   ]
+                }
+              ]
+            },
+            "student_enrollments": {
+              "columns": {
+                "academicYear": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "courseNumber": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "semesterId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "studentId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "studyGroupId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "student_enrollments_studentId_idx_bf255322"
+                  },
+                  "source": {
+                    "columns": [
+                      "studentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_enrollments"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "students"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "student_enrollments_semesterId_idx_c8bca8d0"
+                  },
+                  "source": {
+                    "columns": [
+                      "semesterId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_enrollments"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "semesters"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "student_enrollments_studyGroupId_idx_b7300630"
+                  },
+                  "source": {
+                    "columns": [
+                      "studyGroupId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_enrollments"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "study_groups"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "studyGroupId",
+                    "semesterId"
+                  ],
+                  "name": "student_enrollment_group_semester_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "semesterId"
+                  ],
+                  "name": "student_enrollments_semesterId_idx_c8bca8d0",
+                  "prefix": "student_enrollments_semesterId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentId"
+                  ],
+                  "name": "student_enrollments_studentId_idx_bf255322",
+                  "prefix": "student_enrollments_studentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studyGroupId"
+                  ],
+                  "name": "student_enrollments_studyGroupId_idx_b7300630",
+                  "prefix": "student_enrollments_studyGroupId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "studentId",
+                    "semesterId"
+                  ],
+                  "name": "student_enrollment_student_semester_key"
                 }
               ]
             },
@@ -2628,7 +3494,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4aadc3c5f8776c549d84318c38fc68f54ccc8b47c414137b2888e460ca243a53"
+    "storageHash": "19b67fc8d24f307fe324cfcc5e2477edf1ba79c56e182287d668bd1391686222"
   },
   "execution": {
     "executionHash": "aa8f401b4a47fe8dddeb01fde7e4a1379a14a8e5847e2639e62598991947b74e",

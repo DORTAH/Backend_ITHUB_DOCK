@@ -40,6 +40,8 @@ model Semester {
   name    String                 @unique
   records AcademicPerformance[]
   studentLicenses StudentLicense[]
+  attestationCommissions AttestationCommission[]
+  studentEnrollments StudentEnrollment[]
 
   @@map("semesters")
 }
@@ -52,6 +54,7 @@ model Student {
   patronymic String?
   records     AcademicPerformance[]
   licenseAssignments StudentLicense[]
+  enrollments StudentEnrollment[]
 
   @@map("students")
 }
@@ -64,6 +67,8 @@ model StudyGroup {
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
   studyProgram       StudyProgram?           @relation(fields: [studyProgramId], references: [id])
   records            AcademicPerformance[]
+  attestationCommissions AttestationCommission[]
+  studentEnrollments StudentEnrollment[]
 
   @@unique([suborganizationId, name])
   @@map("study_groups")
@@ -78,6 +83,7 @@ model StudyProgram {
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
   groups             StudyGroup[]
   fgosDisciplines    FgosDiscipline[]
+  attestationCommissions AttestationCommission[]
 
   @@unique([suborganizationId, specialtyCode])
   @@map("study_programs")
@@ -91,6 +97,7 @@ model Discipline {
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
   records            AcademicPerformance[]
   fgosMappings       FgosDisciplineMapping[]
+  attestationCommissions AttestationCommission[]
 
   @@unique([suborganizationId, code, name])
   @@map("disciplines")
@@ -119,6 +126,38 @@ model FgosDisciplineMapping {
   @@map("fgos_discipline_mappings")
 }
 
+// Состав комиссии для ведомости/документа за конкретный период и группу.
+// Привязка к дисциплине необязательна: комиссия может быть общей для группы.
+model AttestationCommission {
+  id             Int                         @id @default(autoincrement())
+  studyProgramId Int
+  semesterId     Int
+  studyGroupId   Int?
+  disciplineId   Int?
+  studyProgram   StudyProgram                @relation(fields: [studyProgramId], references: [id])
+  semester       Semester                    @relation(fields: [semesterId], references: [id])
+  studyGroup     StudyGroup?                 @relation(fields: [studyGroupId], references: [id])
+  discipline     Discipline?                 @relation(fields: [disciplineId], references: [id])
+  members        AttestationCommissionMember[]
+
+  @@index([studyProgramId, semesterId], map: "att_comm_prog_sem_idx")
+  @@index([studyGroupId, semesterId], map: "att_comm_group_sem_idx")
+  @@map("attestation_commissions")
+}
+
+model AttestationCommissionMember {
+  id           Int                   @id @default(autoincrement())
+  commissionId Int
+  fullName     String
+  role         String
+  position     String?
+  sortOrder    Int                   @default(0)
+  commission   AttestationCommission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+
+  @@index([commissionId, sortOrder], map: "att_comm_member_order_idx")
+  @@map("attestation_commission_members")
+}
+
 model License {
   id          Int              @id @default(autoincrement())
   name        String           @unique
@@ -138,6 +177,24 @@ model StudentLicense {
 
   @@unique([studentId, semesterId])
   @@map("student_licenses")
+}
+
+// История обучения студента в группе за каждый семестр.
+// Курс и учебный год nullable: исходные Excel-выгрузки их явно не содержат.
+model StudentEnrollment {
+  id            Int        @id @default(autoincrement())
+  studentId     Int
+  semesterId    Int
+  studyGroupId  Int
+  academicYear  String?
+  courseNumber  Int?
+  student       Student    @relation(fields: [studentId], references: [id])
+  semester      Semester   @relation(fields: [semesterId], references: [id])
+  studyGroup    StudyGroup @relation(fields: [studyGroupId], references: [id])
+
+  @@unique([studentId, semesterId], map: "student_enrollment_student_semester_key")
+  @@index([studyGroupId, semesterId], map: "student_enrollment_group_semester_idx")
+  @@map("student_enrollments")
 }
 
 model AcademicPerformance {

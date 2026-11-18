@@ -1,0 +1,744 @@
+[
+  {
+    "id": "table.attestation_commission_members",
+    "label": "Create table \"attestation_commission_members\"",
+    "summary": "Creates table \"attestation_commission_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "attestation_commission_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attestation_commission_members\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commission_members\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"attestation_commission_members\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attestation_commission_members\"",
+        "sql": "CREATE TABLE \"public\".\"attestation_commission_members\" (\n  \"commissionId\" int4 NOT NULL,\n  \"fullName\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"position\" text,\n  \"role\" text NOT NULL,\n  \"sortOrder\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attestation_commission_members\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commission_members\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"attestation_commission_members\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.attestation_commissions",
+    "label": "Create table \"attestation_commissions\"",
+    "summary": "Creates table \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attestation_commissions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"attestation_commissions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attestation_commissions\"",
+        "sql": "CREATE TABLE \"public\".\"attestation_commissions\" (\n  \"disciplineId\" int4,\n  \"id\" SERIAL NOT NULL,\n  \"semesterId\" int4 NOT NULL,\n  \"studyGroupId\" int4,\n  \"studyProgramId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attestation_commissions\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"attestation_commissions\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commission_members.att_comm_member_order_idx",
+    "label": "Create index \"att_comm_member_order_idx\" on \"attestation_commission_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "att_comm_member_order_idx",
+        "table": "attestation_commission_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"att_comm_member_order_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_member_order_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"att_comm_member_order_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"att_comm_member_order_idx\"",
+        "sql": "CREATE INDEX \"att_comm_member_order_idx\" ON \"public\".\"attestation_commission_members\" (\"commissionId\", \"sortOrder\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"att_comm_member_order_idx\" exists on \"attestation_commission_members\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_member_order_idx\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commission_members\"",
+          "btree",
+          "[\"commissionId\",\"sortOrder\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commission_members.attestation_commission_members_commissionId_idx_5ca7b813",
+    "label": "Create index \"attestation_commission_members_commissionId_idx_5ca7b813\" on \"attestation_commission_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attestation_commission_members_commissionId_idx_5ca7b813",
+        "table": "attestation_commission_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attestation_commission_members_commissionId_idx_5ca7b813\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commission_members_commissionId_idx_5ca7b813\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"attestation_commission_members_commissionId_idx_5ca7b813\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attestation_commission_members_commissionId_idx_5ca7b813\"",
+        "sql": "CREATE INDEX \"attestation_commission_members_commissionId_idx_5ca7b813\" ON \"public\".\"attestation_commission_members\" (\"commissionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attestation_commission_members_commissionId_idx_5ca7b813\" exists on \"attestation_commission_members\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commission_members_commissionId_idx_5ca7b813\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commission_members\"",
+          "btree",
+          "[\"commissionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.att_comm_group_sem_idx",
+    "label": "Create index \"att_comm_group_sem_idx\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "att_comm_group_sem_idx",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"att_comm_group_sem_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_group_sem_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"att_comm_group_sem_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"att_comm_group_sem_idx\"",
+        "sql": "CREATE INDEX \"att_comm_group_sem_idx\" ON \"public\".\"attestation_commissions\" (\"studyGroupId\", \"semesterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"att_comm_group_sem_idx\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_group_sem_idx\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"studyGroupId\",\"semesterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.att_comm_prog_sem_idx",
+    "label": "Create index \"att_comm_prog_sem_idx\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "att_comm_prog_sem_idx",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"att_comm_prog_sem_idx\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_prog_sem_idx\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"att_comm_prog_sem_idx\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"att_comm_prog_sem_idx\"",
+        "sql": "CREATE INDEX \"att_comm_prog_sem_idx\" ON \"public\".\"attestation_commissions\" (\"studyProgramId\", \"semesterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"att_comm_prog_sem_idx\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"att_comm_prog_sem_idx\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"studyProgramId\",\"semesterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.attestation_commissions_disciplineId_idx_e8c0205f",
+    "label": "Create index \"attestation_commissions_disciplineId_idx_e8c0205f\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attestation_commissions_disciplineId_idx_e8c0205f",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attestation_commissions_disciplineId_idx_e8c0205f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_disciplineId_idx_e8c0205f\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"attestation_commissions_disciplineId_idx_e8c0205f\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attestation_commissions_disciplineId_idx_e8c0205f\"",
+        "sql": "CREATE INDEX \"attestation_commissions_disciplineId_idx_e8c0205f\" ON \"public\".\"attestation_commissions\" (\"disciplineId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attestation_commissions_disciplineId_idx_e8c0205f\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_disciplineId_idx_e8c0205f\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"disciplineId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.attestation_commissions_semesterId_idx_c8bca8d0",
+    "label": "Create index \"attestation_commissions_semesterId_idx_c8bca8d0\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attestation_commissions_semesterId_idx_c8bca8d0",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attestation_commissions_semesterId_idx_c8bca8d0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_semesterId_idx_c8bca8d0\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"attestation_commissions_semesterId_idx_c8bca8d0\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attestation_commissions_semesterId_idx_c8bca8d0\"",
+        "sql": "CREATE INDEX \"attestation_commissions_semesterId_idx_c8bca8d0\" ON \"public\".\"attestation_commissions\" (\"semesterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attestation_commissions_semesterId_idx_c8bca8d0\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_semesterId_idx_c8bca8d0\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"semesterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.attestation_commissions_studyGroupId_idx_b7300630",
+    "label": "Create index \"attestation_commissions_studyGroupId_idx_b7300630\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attestation_commissions_studyGroupId_idx_b7300630",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attestation_commissions_studyGroupId_idx_b7300630\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_studyGroupId_idx_b7300630\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"attestation_commissions_studyGroupId_idx_b7300630\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attestation_commissions_studyGroupId_idx_b7300630\"",
+        "sql": "CREATE INDEX \"attestation_commissions_studyGroupId_idx_b7300630\" ON \"public\".\"attestation_commissions\" (\"studyGroupId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attestation_commissions_studyGroupId_idx_b7300630\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_studyGroupId_idx_b7300630\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"studyGroupId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attestation_commissions.attestation_commissions_studyProgramId_idx_4b5996c5",
+    "label": "Create index \"attestation_commissions_studyProgramId_idx_4b5996c5\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "attestation_commissions_studyProgramId_idx_4b5996c5",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attestation_commissions_studyProgramId_idx_4b5996c5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_studyProgramId_idx_4b5996c5\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"attestation_commissions_studyProgramId_idx_4b5996c5\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attestation_commissions_studyProgramId_idx_4b5996c5\"",
+        "sql": "CREATE INDEX \"attestation_commissions_studyProgramId_idx_4b5996c5\" ON \"public\".\"attestation_commissions\" (\"studyProgramId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attestation_commissions_studyProgramId_idx_4b5996c5\" exists on \"attestation_commissions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"attestation_commissions_studyProgramId_idx_4b5996c5\"",
+          "i",
+          "I",
+          "\"public\".\"attestation_commissions\"",
+          "btree",
+          "[\"studyProgramId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attestation_commission_members.attestation_commission_members_commissionId_fkey",
+    "label": "Add foreign key \"attestation_commission_members_commissionId_fkey\" on \"attestation_commission_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attestation_commission_members_commissionId_fkey",
+        "table": "attestation_commission_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attestation_commission_members_commissionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attestation_commission_members_commissionId_fkey",
+          "public",
+          "\"public\".\"attestation_commission_members\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"attestation_commission_members_commissionId_fkey\" on \"attestation_commission_members\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attestation_commission_members_commissionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attestation_commission_members\"\nADD CONSTRAINT \"attestation_commission_members_commissionId_fkey\"\nFOREIGN KEY (\"commissionId\")\nREFERENCES \"public\".\"attestation_commissions\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attestation_commission_members_commissionId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "attestation_commission_members_commissionId_fkey",
+          "public",
+          "\"public\".\"attestation_commission_members\"",
+          "f",
+          "[\"commissionId\"]",
+          "\"public\".\"attestation_commissions\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attestation_commissions.attestation_commissions_studyProgramId_fkey",
+    "label": "Add foreign key \"attestation_commissions_studyProgramId_fkey\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attestation_commissions_studyProgramId_fkey",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attestation_commissions_studyProgramId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attestation_commissions_studyProgramId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"attestation_commissions_studyProgramId_fkey\" on \"attestation_commissions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attestation_commissions_studyProgramId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attestation_commissions\"\nADD CONSTRAINT \"attestation_commissions_studyProgramId_fkey\"\nFOREIGN KEY (\"studyProgramId\")\nREFERENCES \"public\".\"study_programs\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attestation_commissions_studyProgramId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "attestation_commissions_studyProgramId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\"",
+          "f",
+          "[\"studyProgramId\"]",
+          "\"public\".\"study_programs\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attestation_commissions.attestation_commissions_semesterId_fkey",
+    "label": "Add foreign key \"attestation_commissions_semesterId_fkey\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attestation_commissions_semesterId_fkey",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attestation_commissions_semesterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attestation_commissions_semesterId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"attestation_commissions_semesterId_fkey\" on \"attestation_commissions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attestation_commissions_semesterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attestation_commissions\"\nADD CONSTRAINT \"attestation_commissions_semesterId_fkey\"\nFOREIGN KEY (\"semesterId\")\nREFERENCES \"public\".\"semesters\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attestation_commissions_semesterId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "attestation_commissions_semesterId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\"",
+          "f",
+          "[\"semesterId\"]",
+          "\"public\".\"semesters\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attestation_commissions.attestation_commissions_studyGroupId_fkey",
+    "label": "Add foreign key \"attestation_commissions_studyGroupId_fkey\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attestation_commissions_studyGroupId_fkey",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attestation_commissions_studyGroupId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attestation_commissions_studyGroupId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"attestation_commissions_studyGroupId_fkey\" on \"attestation_commissions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attestation_commissions_studyGroupId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attestation_commissions\"\nADD CONSTRAINT \"attestation_commissions_studyGroupId_fkey\"\nFOREIGN KEY (\"studyGroupId\")\nREFERENCES \"public\".\"study_groups\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attestation_commissions_studyGroupId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "attestation_commissions_studyGroupId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\"",
+          "f",
+          "[\"studyGroupId\"]",
+          "\"public\".\"study_groups\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attestation_commissions.attestation_commissions_disciplineId_fkey",
+    "label": "Add foreign key \"attestation_commissions_disciplineId_fkey\" on \"attestation_commissions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "attestation_commissions_disciplineId_fkey",
+        "table": "attestation_commissions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attestation_commissions_disciplineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attestation_commissions_disciplineId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"attestation_commissions_disciplineId_fkey\" on \"attestation_commissions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attestation_commissions_disciplineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"attestation_commissions\"\nADD CONSTRAINT \"attestation_commissions_disciplineId_fkey\"\nFOREIGN KEY (\"disciplineId\")\nREFERENCES \"public\".\"disciplines\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attestation_commissions_disciplineId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "attestation_commissions_disciplineId_fkey",
+          "public",
+          "\"public\".\"attestation_commissions\"",
+          "f",
+          "[\"disciplineId\"]",
+          "\"public\".\"disciplines\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]
