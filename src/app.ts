@@ -3,6 +3,7 @@ import cors from 'cors';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { importRouter } from './modules/import/import.router.js';
+import { exportRouter } from './modules/export/export.router.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { env } from './config/env.js';
 
@@ -16,7 +17,9 @@ app.set('view engine', 'ejs');
 app.set('views', resolve(appDirectory, '../templates'));
 app.use(express.static(resolve(appDirectory, '../public')));
 app.get('/', (_req, res) => res.render('import'));
+app.get('/exports', (_req, res) => res.render('export'));
 app.use('/api/import', importRouter);
+app.use('/api/export', exportRouter);
 app.use(errorHandler);
 
 app.listen(env.port, () => {

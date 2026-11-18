@@ -1,0 +1,1347 @@
+[
+  {
+    "id": "table.fgos_discipline_mappings",
+    "label": "Create table \"fgos_discipline_mappings\"",
+    "summary": "Creates table \"fgos_discipline_mappings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"fgos_discipline_mappings\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"fgos_discipline_mappings\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"fgos_discipline_mappings\"",
+        "sql": "CREATE TABLE \"public\".\"fgos_discipline_mappings\" (\n  \"disciplineId\" int4 NOT NULL,\n  \"fgosDisciplineId\" int4 NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"fgos_discipline_mappings\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"fgos_discipline_mappings\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.fgos_disciplines",
+    "label": "Create table \"fgos_disciplines\"",
+    "summary": "Creates table \"fgos_disciplines\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "fgos_disciplines"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"fgos_disciplines\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_disciplines\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"fgos_disciplines\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"fgos_disciplines\"",
+        "sql": "CREATE TABLE \"public\".\"fgos_disciplines\" (\n  \"code\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"studyProgramId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"fgos_disciplines\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_disciplines\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"fgos_disciplines\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.licenses",
+    "label": "Create table \"licenses\"",
+    "summary": "Creates table \"licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"licenses\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"licenses\"",
+        "sql": "CREATE TABLE \"public\".\"licenses\" (\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"licenses\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"licenses\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"licenses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.student_licenses",
+    "label": "Create table \"student_licenses\"",
+    "summary": "Creates table \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"student_licenses\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"student_licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"student_licenses\"",
+        "sql": "CREATE TABLE \"public\".\"student_licenses\" (\n  \"id\" SERIAL NOT NULL,\n  \"licenseId\" int4 NOT NULL,\n  \"semesterId\" int4 NOT NULL,\n  \"studentId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"student_licenses\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"student_licenses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.study_programs",
+    "label": "Create table \"study_programs\"",
+    "summary": "Creates table \"study_programs\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "study_programs"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"study_programs\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"study_programs\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"study_programs\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"study_programs\"",
+        "sql": "CREATE TABLE \"public\".\"study_programs\" (\n  \"id\" SERIAL NOT NULL,\n  \"name\" text NOT NULL,\n  \"qualification\" text NOT NULL,\n  \"specialtyCode\" text NOT NULL,\n  \"suborganizationId\" int4 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"study_programs\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"study_programs\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"study_programs\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.study_groups.studyProgramId",
+    "label": "Add column \"studyProgramId\" to \"study_groups\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "studyProgramId",
+        "table": "study_groups"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"studyProgramId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "study_groups",
+          "studyProgramId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"studyProgramId\" on \"study_groups\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"studyProgramId\"",
+        "sql": "ALTER TABLE \"public\".\"study_groups\" ADD COLUMN \"studyProgramId\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"studyProgramId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "study_groups",
+          "studyProgramId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"studyProgramId\" on \"study_groups\""
+        }
+      },
+      {
+        "description": "verify column \"studyProgramId\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "study_groups",
+          "studyProgramId",
+          "integer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.fgos_discipline_mappings.fgos_discipline_mappings_disciplineId_fgosDisciplineId_key",
+    "label": "Add unique constraint on \"fgos_discipline_mappings\" (disciplineId, fgosDisciplineId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "fgos_discipline_mappings_disciplineId_fgosDisciplineId_key",
+        "table": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"fgos_discipline_mappings_disciplineId_fgosDisciplineId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_disciplineId_fgosDisciplineId_key",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"fgos_discipline_mappings_disciplineId_fgosDisciplineId_key\" on \"fgos_discipline_mappings\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"fgos_discipline_mappings_disciplineId_fgosDisciplineId_key\"",
+        "sql": "ALTER TABLE \"public\".\"fgos_discipline_mappings\" ADD CONSTRAINT \"fgos_discipline_mappings_disciplineId_fgosDisciplineId_key\" UNIQUE (\"disciplineId\", \"fgosDisciplineId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"fgos_discipline_mappings_disciplineId_fgosDisciplineId_key\" exists on (disciplineId, fgosDisciplineId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_disciplineId_fgosDisciplineId_key",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\"",
+          "u",
+          "[\"disciplineId\",\"fgosDisciplineId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.fgos_disciplines.fgos_disciplines_studyProgramId_code_name_key",
+    "label": "Add unique constraint on \"fgos_disciplines\" (studyProgramId, code, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "fgos_disciplines_studyProgramId_code_name_key",
+        "table": "fgos_disciplines"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"fgos_disciplines_studyProgramId_code_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "fgos_disciplines_studyProgramId_code_name_key",
+          "public",
+          "\"public\".\"fgos_disciplines\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"fgos_disciplines_studyProgramId_code_name_key\" on \"fgos_disciplines\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"fgos_disciplines_studyProgramId_code_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"fgos_disciplines\" ADD CONSTRAINT \"fgos_disciplines_studyProgramId_code_name_key\" UNIQUE (\"studyProgramId\", \"code\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"fgos_disciplines_studyProgramId_code_name_key\" exists on (studyProgramId, code, name)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "fgos_disciplines_studyProgramId_code_name_key",
+          "public",
+          "\"public\".\"fgos_disciplines\"",
+          "u",
+          "[\"studyProgramId\",\"code\",\"name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.licenses.licenses_name_key",
+    "label": "Add unique constraint on \"licenses\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "licenses_name_key",
+        "table": "licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"licenses_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "licenses_name_key",
+          "public",
+          "\"public\".\"licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"licenses_name_key\" on \"licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"licenses_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"licenses\" ADD CONSTRAINT \"licenses_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"licenses_name_key\" exists on (name)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "licenses_name_key",
+          "public",
+          "\"public\".\"licenses\"",
+          "u",
+          "[\"name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.student_licenses.student_licenses_studentId_semesterId_key",
+    "label": "Add unique constraint on \"student_licenses\" (studentId, semesterId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "student_licenses_studentId_semesterId_key",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"student_licenses_studentId_semesterId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "student_licenses_studentId_semesterId_key",
+          "public",
+          "\"public\".\"student_licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"student_licenses_studentId_semesterId_key\" on \"student_licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"student_licenses_studentId_semesterId_key\"",
+        "sql": "ALTER TABLE \"public\".\"student_licenses\" ADD CONSTRAINT \"student_licenses_studentId_semesterId_key\" UNIQUE (\"studentId\", \"semesterId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"student_licenses_studentId_semesterId_key\" exists on (studentId, semesterId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "student_licenses_studentId_semesterId_key",
+          "public",
+          "\"public\".\"student_licenses\"",
+          "u",
+          "[\"studentId\",\"semesterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.study_programs.study_programs_suborganizationId_specialtyCode_key",
+    "label": "Add unique constraint on \"study_programs\" (suborganizationId, specialtyCode)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "study_programs_suborganizationId_specialtyCode_key",
+        "table": "study_programs"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"study_programs_suborganizationId_specialtyCode_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "study_programs_suborganizationId_specialtyCode_key",
+          "public",
+          "\"public\".\"study_programs\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"study_programs_suborganizationId_specialtyCode_key\" on \"study_programs\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"study_programs_suborganizationId_specialtyCode_key\"",
+        "sql": "ALTER TABLE \"public\".\"study_programs\" ADD CONSTRAINT \"study_programs_suborganizationId_specialtyCode_key\" UNIQUE (\"suborganizationId\", \"specialtyCode\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"study_programs_suborganizationId_specialtyCode_key\" exists on (suborganizationId, specialtyCode)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "study_programs_suborganizationId_specialtyCode_key",
+          "public",
+          "\"public\".\"study_programs\"",
+          "u",
+          "[\"suborganizationId\",\"specialtyCode\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.fgos_discipline_mappings.fgos_discipline_mappings_disciplineId_idx_e8c0205f",
+    "label": "Create index \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\" on \"fgos_discipline_mappings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "fgos_discipline_mappings_disciplineId_idx_e8c0205f",
+        "table": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings_disciplineId_idx_e8c0205f\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\"",
+        "sql": "CREATE INDEX \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\" ON \"public\".\"fgos_discipline_mappings\" (\"disciplineId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"fgos_discipline_mappings_disciplineId_idx_e8c0205f\" exists on \"fgos_discipline_mappings\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings_disciplineId_idx_e8c0205f\"",
+          "i",
+          "I",
+          "\"public\".\"fgos_discipline_mappings\"",
+          "btree",
+          "[\"disciplineId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.fgos_discipline_mappings.fgos_discipline_mappings_fgosDisciplineId_idx_94293b20",
+    "label": "Create index \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\" on \"fgos_discipline_mappings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "fgos_discipline_mappings_fgosDisciplineId_idx_94293b20",
+        "table": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\"",
+        "sql": "CREATE INDEX \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\" ON \"public\".\"fgos_discipline_mappings\" (\"fgosDisciplineId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\" exists on \"fgos_discipline_mappings\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_discipline_mappings_fgosDisciplineId_idx_94293b20\"",
+          "i",
+          "I",
+          "\"public\".\"fgos_discipline_mappings\"",
+          "btree",
+          "[\"fgosDisciplineId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.fgos_disciplines.fgos_disciplines_studyProgramId_idx_4b5996c5",
+    "label": "Create index \"fgos_disciplines_studyProgramId_idx_4b5996c5\" on \"fgos_disciplines\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "fgos_disciplines_studyProgramId_idx_4b5996c5",
+        "table": "fgos_disciplines"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"fgos_disciplines_studyProgramId_idx_4b5996c5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_disciplines_studyProgramId_idx_4b5996c5\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"fgos_disciplines_studyProgramId_idx_4b5996c5\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"fgos_disciplines_studyProgramId_idx_4b5996c5\"",
+        "sql": "CREATE INDEX \"fgos_disciplines_studyProgramId_idx_4b5996c5\" ON \"public\".\"fgos_disciplines\" (\"studyProgramId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"fgos_disciplines_studyProgramId_idx_4b5996c5\" exists on \"fgos_disciplines\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"fgos_disciplines_studyProgramId_idx_4b5996c5\"",
+          "i",
+          "I",
+          "\"public\".\"fgos_disciplines\"",
+          "btree",
+          "[\"studyProgramId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.student_licenses.student_licenses_licenseId_idx_bd8730e9",
+    "label": "Create index \"student_licenses_licenseId_idx_bd8730e9\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "student_licenses_licenseId_idx_bd8730e9",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"student_licenses_licenseId_idx_bd8730e9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_licenseId_idx_bd8730e9\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"student_licenses_licenseId_idx_bd8730e9\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"student_licenses_licenseId_idx_bd8730e9\"",
+        "sql": "CREATE INDEX \"student_licenses_licenseId_idx_bd8730e9\" ON \"public\".\"student_licenses\" (\"licenseId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"student_licenses_licenseId_idx_bd8730e9\" exists on \"student_licenses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_licenseId_idx_bd8730e9\"",
+          "i",
+          "I",
+          "\"public\".\"student_licenses\"",
+          "btree",
+          "[\"licenseId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.student_licenses.student_licenses_semesterId_idx_c8bca8d0",
+    "label": "Create index \"student_licenses_semesterId_idx_c8bca8d0\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "student_licenses_semesterId_idx_c8bca8d0",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"student_licenses_semesterId_idx_c8bca8d0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_semesterId_idx_c8bca8d0\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"student_licenses_semesterId_idx_c8bca8d0\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"student_licenses_semesterId_idx_c8bca8d0\"",
+        "sql": "CREATE INDEX \"student_licenses_semesterId_idx_c8bca8d0\" ON \"public\".\"student_licenses\" (\"semesterId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"student_licenses_semesterId_idx_c8bca8d0\" exists on \"student_licenses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_semesterId_idx_c8bca8d0\"",
+          "i",
+          "I",
+          "\"public\".\"student_licenses\"",
+          "btree",
+          "[\"semesterId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.student_licenses.student_licenses_studentId_idx_bf255322",
+    "label": "Create index \"student_licenses_studentId_idx_bf255322\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "student_licenses_studentId_idx_bf255322",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"student_licenses_studentId_idx_bf255322\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_studentId_idx_bf255322\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"student_licenses_studentId_idx_bf255322\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"student_licenses_studentId_idx_bf255322\"",
+        "sql": "CREATE INDEX \"student_licenses_studentId_idx_bf255322\" ON \"public\".\"student_licenses\" (\"studentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"student_licenses_studentId_idx_bf255322\" exists on \"student_licenses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"student_licenses_studentId_idx_bf255322\"",
+          "i",
+          "I",
+          "\"public\".\"student_licenses\"",
+          "btree",
+          "[\"studentId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.study_groups.study_groups_studyProgramId_idx_4b5996c5",
+    "label": "Create index \"study_groups_studyProgramId_idx_4b5996c5\" on \"study_groups\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "study_groups_studyProgramId_idx_4b5996c5",
+        "table": "study_groups"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"study_groups_studyProgramId_idx_4b5996c5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"study_groups_studyProgramId_idx_4b5996c5\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"study_groups_studyProgramId_idx_4b5996c5\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"study_groups_studyProgramId_idx_4b5996c5\"",
+        "sql": "CREATE INDEX \"study_groups_studyProgramId_idx_4b5996c5\" ON \"public\".\"study_groups\" (\"studyProgramId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"study_groups_studyProgramId_idx_4b5996c5\" exists on \"study_groups\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"study_groups_studyProgramId_idx_4b5996c5\"",
+          "i",
+          "I",
+          "\"public\".\"study_groups\"",
+          "btree",
+          "[\"studyProgramId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.study_programs.study_programs_suborganizationId_idx_0edb9417",
+    "label": "Create index \"study_programs_suborganizationId_idx_0edb9417\" on \"study_programs\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "study_programs_suborganizationId_idx_0edb9417",
+        "table": "study_programs"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"study_programs_suborganizationId_idx_0edb9417\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"study_programs_suborganizationId_idx_0edb9417\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"study_programs_suborganizationId_idx_0edb9417\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"study_programs_suborganizationId_idx_0edb9417\"",
+        "sql": "CREATE INDEX \"study_programs_suborganizationId_idx_0edb9417\" ON \"public\".\"study_programs\" (\"suborganizationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"study_programs_suborganizationId_idx_0edb9417\" exists on \"study_programs\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"study_programs_suborganizationId_idx_0edb9417\"",
+          "i",
+          "I",
+          "\"public\".\"study_programs\"",
+          "btree",
+          "[\"suborganizationId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.fgos_discipline_mappings.fgos_discipline_mappings_disciplineId_fkey",
+    "label": "Add foreign key \"fgos_discipline_mappings_disciplineId_fkey\" on \"fgos_discipline_mappings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "fgos_discipline_mappings_disciplineId_fkey",
+        "table": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"fgos_discipline_mappings_disciplineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_disciplineId_fkey",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"fgos_discipline_mappings_disciplineId_fkey\" on \"fgos_discipline_mappings\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"fgos_discipline_mappings_disciplineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"fgos_discipline_mappings\"\nADD CONSTRAINT \"fgos_discipline_mappings_disciplineId_fkey\"\nFOREIGN KEY (\"disciplineId\")\nREFERENCES \"public\".\"disciplines\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"fgos_discipline_mappings_disciplineId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_disciplineId_fkey",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\"",
+          "f",
+          "[\"disciplineId\"]",
+          "\"public\".\"disciplines\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.fgos_discipline_mappings.fgos_discipline_mappings_fgosDisciplineId_fkey",
+    "label": "Add foreign key \"fgos_discipline_mappings_fgosDisciplineId_fkey\" on \"fgos_discipline_mappings\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "fgos_discipline_mappings_fgosDisciplineId_fkey",
+        "table": "fgos_discipline_mappings"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"fgos_discipline_mappings_fgosDisciplineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_fgosDisciplineId_fkey",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"fgos_discipline_mappings_fgosDisciplineId_fkey\" on \"fgos_discipline_mappings\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"fgos_discipline_mappings_fgosDisciplineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"fgos_discipline_mappings\"\nADD CONSTRAINT \"fgos_discipline_mappings_fgosDisciplineId_fkey\"\nFOREIGN KEY (\"fgosDisciplineId\")\nREFERENCES \"public\".\"fgos_disciplines\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"fgos_discipline_mappings_fgosDisciplineId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "fgos_discipline_mappings_fgosDisciplineId_fkey",
+          "public",
+          "\"public\".\"fgos_discipline_mappings\"",
+          "f",
+          "[\"fgosDisciplineId\"]",
+          "\"public\".\"fgos_disciplines\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.fgos_disciplines.fgos_disciplines_studyProgramId_fkey",
+    "label": "Add foreign key \"fgos_disciplines_studyProgramId_fkey\" on \"fgos_disciplines\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "fgos_disciplines_studyProgramId_fkey",
+        "table": "fgos_disciplines"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"fgos_disciplines_studyProgramId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "fgos_disciplines_studyProgramId_fkey",
+          "public",
+          "\"public\".\"fgos_disciplines\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"fgos_disciplines_studyProgramId_fkey\" on \"fgos_disciplines\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"fgos_disciplines_studyProgramId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"fgos_disciplines\"\nADD CONSTRAINT \"fgos_disciplines_studyProgramId_fkey\"\nFOREIGN KEY (\"studyProgramId\")\nREFERENCES \"public\".\"study_programs\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"fgos_disciplines_studyProgramId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "fgos_disciplines_studyProgramId_fkey",
+          "public",
+          "\"public\".\"fgos_disciplines\"",
+          "f",
+          "[\"studyProgramId\"]",
+          "\"public\".\"study_programs\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.student_licenses.student_licenses_studentId_fkey",
+    "label": "Add foreign key \"student_licenses_studentId_fkey\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "student_licenses_studentId_fkey",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"student_licenses_studentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "student_licenses_studentId_fkey",
+          "public",
+          "\"public\".\"student_licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"student_licenses_studentId_fkey\" on \"student_licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"student_licenses_studentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"student_licenses\"\nADD CONSTRAINT \"student_licenses_studentId_fkey\"\nFOREIGN KEY (\"studentId\")\nREFERENCES \"public\".\"students\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"student_licenses_studentId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "student_licenses_studentId_fkey",
+          "public",
+          "\"public\".\"student_licenses\"",
+          "f",
+          "[\"studentId\"]",
+          "\"public\".\"students\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.student_licenses.student_licenses_licenseId_fkey",
+    "label": "Add foreign key \"student_licenses_licenseId_fkey\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "student_licenses_licenseId_fkey",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"student_licenses_licenseId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "student_licenses_licenseId_fkey",
+          "public",
+          "\"public\".\"student_licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"student_licenses_licenseId_fkey\" on \"student_licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"student_licenses_licenseId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"student_licenses\"\nADD CONSTRAINT \"student_licenses_licenseId_fkey\"\nFOREIGN KEY (\"licenseId\")\nREFERENCES \"public\".\"licenses\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"student_licenses_licenseId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "student_licenses_licenseId_fkey",
+          "public",
+          "\"public\".\"student_licenses\"",
+          "f",
+          "[\"licenseId\"]",
+          "\"public\".\"licenses\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.student_licenses.student_licenses_semesterId_fkey",
+    "label": "Add foreign key \"student_licenses_semesterId_fkey\" on \"student_licenses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "student_licenses_semesterId_fkey",
+        "table": "student_licenses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"student_licenses_semesterId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "student_licenses_semesterId_fkey",
+          "public",
+          "\"public\".\"student_licenses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"student_licenses_semesterId_fkey\" on \"student_licenses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"student_licenses_semesterId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"student_licenses\"\nADD CONSTRAINT \"student_licenses_semesterId_fkey\"\nFOREIGN KEY (\"semesterId\")\nREFERENCES \"public\".\"semesters\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"student_licenses_semesterId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "student_licenses_semesterId_fkey",
+          "public",
+          "\"public\".\"student_licenses\"",
+          "f",
+          "[\"semesterId\"]",
+          "\"public\".\"semesters\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.study_programs.study_programs_suborganizationId_fkey",
+    "label": "Add foreign key \"study_programs_suborganizationId_fkey\" on \"study_programs\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "study_programs_suborganizationId_fkey",
+        "table": "study_programs"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"study_programs_suborganizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "study_programs_suborganizationId_fkey",
+          "public",
+          "\"public\".\"study_programs\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"study_programs_suborganizationId_fkey\" on \"study_programs\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"study_programs_suborganizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"study_programs\"\nADD CONSTRAINT \"study_programs_suborganizationId_fkey\"\nFOREIGN KEY (\"suborganizationId\")\nREFERENCES \"public\".\"suborganizations\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"study_programs_suborganizationId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "study_programs_suborganizationId_fkey",
+          "public",
+          "\"public\".\"study_programs\"",
+          "f",
+          "[\"suborganizationId\"]",
+          "\"public\".\"suborganizations\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.study_groups.study_groups_studyProgramId_fkey",
+    "label": "Add foreign key \"study_groups_studyProgramId_fkey\" on \"study_groups\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "study_groups_studyProgramId_fkey",
+        "table": "study_groups"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"study_groups_studyProgramId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "study_groups_studyProgramId_fkey",
+          "public",
+          "\"public\".\"study_groups\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"study_groups_studyProgramId_fkey\" on \"study_groups\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"study_groups_studyProgramId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"study_groups\"\nADD CONSTRAINT \"study_groups_studyProgramId_fkey\"\nFOREIGN KEY (\"studyProgramId\")\nREFERENCES \"public\".\"study_programs\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"study_groups_studyProgramId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "study_groups_studyProgramId_fkey",
+          "public",
+          "\"public\".\"study_groups\"",
+          "f",
+          "[\"studyProgramId\"]",
+          "\"public\".\"study_programs\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]

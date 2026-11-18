@@ -29,6 +29,7 @@ model Suborganization {
   records        AcademicPerformance[]
   studyGroups    StudyGroup[]
   disciplines    Discipline[]
+  studyPrograms  StudyProgram[]
 
   @@unique([organizationId, name])
   @@map("suborganizations")
@@ -38,6 +39,7 @@ model Semester {
   id      Int                    @id @default(autoincrement())
   name    String                 @unique
   records AcademicPerformance[]
+  studentLicenses StudentLicense[]
 
   @@map("semesters")
 }
@@ -49,6 +51,7 @@ model Student {
   firstName   String
   patronymic String?
   records     AcademicPerformance[]
+  licenseAssignments StudentLicense[]
 
   @@map("students")
 }
@@ -57,11 +60,27 @@ model StudyGroup {
   id                 Int                    @id @default(autoincrement())
   name               String
   suborganizationId  Int
+  studyProgramId     Int?
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
+  studyProgram       StudyProgram?           @relation(fields: [studyProgramId], references: [id])
   records            AcademicPerformance[]
 
   @@unique([suborganizationId, name])
   @@map("study_groups")
+}
+
+model StudyProgram {
+  id                 Int                    @id @default(autoincrement())
+  specialtyCode      String
+  name               String
+  qualification      String
+  suborganizationId  Int
+  suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
+  groups             StudyGroup[]
+  fgosDisciplines    FgosDiscipline[]
+
+  @@unique([suborganizationId, specialtyCode])
+  @@map("study_programs")
 }
 
 model Discipline {
@@ -71,9 +90,54 @@ model Discipline {
   suborganizationId  Int
   suborganization    Suborganization        @relation(fields: [suborganizationId], references: [id])
   records            AcademicPerformance[]
+  fgosMappings       FgosDisciplineMapping[]
 
   @@unique([suborganizationId, code, name])
   @@map("disciplines")
+}
+
+model FgosDiscipline {
+  id             Int                    @id @default(autoincrement())
+  studyProgramId Int
+  code           String
+  name           String
+  studyProgram   StudyProgram           @relation(fields: [studyProgramId], references: [id])
+  mappings       FgosDisciplineMapping[]
+
+  @@unique([studyProgramId, code, name])
+  @@map("fgos_disciplines")
+}
+
+model FgosDisciplineMapping {
+  id               Int            @id @default(autoincrement())
+  disciplineId     Int
+  fgosDisciplineId Int
+  discipline       Discipline     @relation(fields: [disciplineId], references: [id])
+  fgosDiscipline   FgosDiscipline @relation(fields: [fgosDisciplineId], references: [id])
+
+  @@unique([disciplineId, fgosDisciplineId])
+  @@map("fgos_discipline_mappings")
+}
+
+model License {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  assignments StudentLicense[]
+
+  @@map("licenses")
+}
+
+model StudentLicense {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  licenseId  Int
+  semesterId Int
+  student    Student  @relation(fields: [studentId], references: [id])
+  license    License  @relation(fields: [licenseId], references: [id])
+  semester   Semester @relation(fields: [semesterId], references: [id])
+
+  @@unique([studentId, semesterId])
+  @@map("student_licenses")
 }
 
 model AcademicPerformance {

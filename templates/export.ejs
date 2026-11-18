@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Экспорт ведомости</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="upload-card export-card" aria-labelledby="page-title">
+        <p class="eyebrow">IThub · документы</p>
+        <h1 id="page-title">Экспорт ведомости</h1>
+        <p class="intro">Сформируйте ведомость по дисциплине из импортированных оценок. Шаблон Excel берётся из папки <code>other</code>.</p>
+
+        <form id="export-form">
+          <label class="field-label" for="semester">Семестр</label>
+          <select id="semester" name="semesterId" required><option value="">Загрузка…</option></select>
+
+          <label class="field-label" for="group">Учебная группа</label>
+          <select id="group" name="groupId" required><option value="">Загрузка…</option></select>
+
+          <label class="field-label" for="discipline">Дисциплина</label>
+          <select id="discipline" name="disciplineId" required><option value="">Загрузка…</option></select>
+
+          <label class="field-label" for="specialty">Специальность</label>
+          <input id="specialty" name="specialty" type="text" placeholder="Подтянется из данных группы, если настроено">
+
+          <label class="field-label" for="qualification">Квалификация</label>
+          <input id="qualification" name="qualification" type="text" placeholder="Подтянется из данных группы, если настроено">
+
+          <label class="field-label" for="control-form">Форма контроля</label>
+          <select id="control-form" name="controlForm" required>
+            <option value="">Выберите форму контроля</option>
+            <option>Зачёт</option>
+            <option>Дифференцированный зачёт</option>
+            <option>Экзамен</option>
+            <option>Контрольная работа</option>
+          </select>
+
+          <label class="field-label" for="date">Дата проведения</label>
+          <input id="date" name="date" type="text" placeholder="ДД.ММ.ГГГГ (необязательно)">
+
+          <label class="field-label" for="teacher">Преподаватель</label>
+          <input id="teacher" name="teacher" type="text" placeholder="Оставьте пустым, чтобы взять из выгрузки">
+
+          <button id="export-button" type="submit">Скачать ведомость .xlsx</button>
+        </form>
+
+        <p class="privacy-note">Форма оценки берётся из поля «Конечные баллы (5-зн система)». Для повторно загруженных строк используется последний импорт.</p>
+        <div id="result" class="result" role="status" aria-live="polite" hidden></div>
+        <nav class="page-links"><a href="/">← К импорту</a></nav>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('export-form');
+      const result = document.getElementById('result');
+      const button = document.getElementById('export-button');
+      let groupsById = new Map();
+
+      function fillSelect(element, items, placeholder) {
+        element.replaceChildren(new Option(placeholder, ''));
+        for (const item of items) element.add(new Option(item.label ?? item.name, item.id));
+        element.disabled = items.length === 0;
+      }
+
+      async function loadOptions() {
+        const response = await fetch('/api/export/options');
+        const options = await response.json();
+        if (!response.ok) throw new Error(options.error || 'Не удалось получить данные для экспорта');
+        groupsById = new Map(options.groups.map((group) => [String(group.id), group]));
+        fillSelect(document.getElementById('semester'), options.semesters, 'Выберите семестр');
+        fillSelect(document.getElementById('group'), options.groups, 'Выберите группу');
+        fillSelect(document.getElementById('discipline'), options.disciplines, 'Выберите дисциплину');
+      }
+
+      function showError(message) {
+        result.hidden = false;
+        result.className = 'result result-error';
+        result.textContent = message;
+      }
+
+      loadOptions().catch((error) => showError(error.message || 'Ошибка загрузки справочников'));
+
+      document.getElementById('group').addEventListener('change', (event) => {
+        const group = groupsById.get(event.currentTarget.value);
+        if (group?.specialty) document.getElementById('specialty').value = group.specialty;
+        if (group?.qualification) document.getElementById('qualification').value = group.qualification;
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        button.disabled = true;
+        button.textContent = 'Формируем…';
+        result.hidden = true;
+
+        try {
+          const payload = Object.fromEntries(new FormData(form));
+          const response = await fetch('/api/export/discipline-register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Не удалось сформировать ведомость');
+          }
+
+          const filenameHeader = response.headers.get('Content-Disposition') || '';
+          const encodedName = filenameHeader.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+          const filename = encodedName ? decodeURIComponent(encodedName) : 'ведомость.xlsx';
+          const url = URL.createObjectURL(await response.blob());
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          result.hidden = false;
+          result.className = 'result result-success';
+          result.textContent = 'Ведомость сформирована и скачана.';
+        } catch (error) {
+          showError(error.message || 'Ошибка экспорта');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Скачать ведомость .xlsx';
+        }
+      });
+    </script>
+  </body>
+</html>
