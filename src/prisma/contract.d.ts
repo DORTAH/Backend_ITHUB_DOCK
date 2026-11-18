@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'ca2e954e1af16b073300d2ec55c98491667e880739065f4c37181a7cc1feb879'>;
+  StorageHashBase<'f9918dd934502adbfaca545acd0820ebc68d5266b1b2a85ecc8807597e81e149'>;
 export type ExecutionHash =
   ExecutionHashBase<'aa8f401b4a47fe8dddeb01fde7e4a1379a14a8e5847e2639e62598991947b74e'>;
 export type ProfileHash =
@@ -398,6 +398,7 @@ export namespace Models {
     readonly [RelationKeys]?: 'positions' | 'teachingAssignments';
   };
   export type public_EmployeeDisciplineAssignment = {
+    academicYear: FieldOutputTypes['public']['EmployeeDisciplineAssignment']['academicYear'];
     disciplineId: FieldOutputTypes['public']['EmployeeDisciplineAssignment']['disciplineId'];
     employeeId: FieldOutputTypes['public']['EmployeeDisciplineAssignment']['employeeId'];
     id: FieldOutputTypes['public']['EmployeeDisciplineAssignment']['id'];
@@ -460,12 +461,14 @@ export namespace Models {
     id: FieldOutputTypes['public']['Semester']['id'];
     name: FieldOutputTypes['public']['Semester']['name'];
     attestationCommissions: public_AttestationCommission[];
+    groupPlanSemesters: public_StudyGroupPlanSemester[];
     records: public_AcademicPerformance[];
     studentEnrollments: public_StudentEnrollment[];
     studentLicenses: public_StudentLicense[];
     teachingAssignments: public_EmployeeDisciplineAssignment[];
     readonly [RelationKeys]?:
       | 'attestationCommissions'
+      | 'groupPlanSemesters'
       | 'records'
       | 'studentEnrollments'
       | 'studentLicenses'
@@ -513,6 +516,7 @@ export namespace Models {
     studyProgramId: FieldOutputTypes['public']['StudyGroup']['studyProgramId'];
     suborganizationId: FieldOutputTypes['public']['StudyGroup']['suborganizationId'];
     attestationCommissions: public_AttestationCommission[];
+    planSemesters: public_StudyGroupPlanSemester[];
     records: public_AcademicPerformance[];
     studentEnrollments: public_StudentEnrollment[];
     studyPlan: public_StudyPlan | null;
@@ -520,11 +524,22 @@ export namespace Models {
     suborganization: public_Suborganization;
     readonly [RelationKeys]?:
       | 'attestationCommissions'
+      | 'planSemesters'
       | 'records'
       | 'studentEnrollments'
       | 'studyPlan'
       | 'studyProgram'
       | 'suborganization';
+  };
+  export type public_StudyGroupPlanSemester = {
+    id: FieldOutputTypes['public']['StudyGroupPlanSemester']['id'];
+    semesterId: FieldOutputTypes['public']['StudyGroupPlanSemester']['semesterId'];
+    studyGroupId: FieldOutputTypes['public']['StudyGroupPlanSemester']['studyGroupId'];
+    studyPlanSemesterId: FieldOutputTypes['public']['StudyGroupPlanSemester']['studyPlanSemesterId'];
+    semester: public_Semester;
+    studyGroup: public_StudyGroup;
+    studyPlanSemester: public_StudyPlanSemester;
+    readonly [RelationKeys]?: 'semester' | 'studyGroup' | 'studyPlanSemester';
   };
   export type public_StudyPlan = {
     admissionBase: FieldOutputTypes['public']['StudyPlan']['admissionBase'];
@@ -538,24 +553,33 @@ export namespace Models {
     studyProgram: public_StudyProgram;
     readonly [RelationKeys]?: 'groups' | 'semesters' | 'studyProgram';
   };
+  export type public_StudyPlanAssessment = {
+    controlForm: FieldOutputTypes['public']['StudyPlanAssessment']['controlForm'];
+    id: FieldOutputTypes['public']['StudyPlanAssessment']['id'];
+    studyPlanDisciplineId: FieldOutputTypes['public']['StudyPlanAssessment']['studyPlanDisciplineId'];
+    studyPlanDiscipline: public_StudyPlanDiscipline;
+    readonly [RelationKeys]?: 'studyPlanDiscipline';
+  };
   export type public_StudyPlanDiscipline = {
     controlForm: FieldOutputTypes['public']['StudyPlanDiscipline']['controlForm'];
     fgosDisciplineId: FieldOutputTypes['public']['StudyPlanDiscipline']['fgosDisciplineId'];
     id: FieldOutputTypes['public']['StudyPlanDiscipline']['id'];
     plannedHours: FieldOutputTypes['public']['StudyPlanDiscipline']['plannedHours'];
     studyPlanSemesterId: FieldOutputTypes['public']['StudyPlanDiscipline']['studyPlanSemesterId'];
+    assessments: public_StudyPlanAssessment[];
     fgosDiscipline: public_FgosDiscipline;
     studyPlanSemester: public_StudyPlanSemester;
-    readonly [RelationKeys]?: 'fgosDiscipline' | 'studyPlanSemester';
+    readonly [RelationKeys]?: 'assessments' | 'fgosDiscipline' | 'studyPlanSemester';
   };
   export type public_StudyPlanSemester = {
     id: FieldOutputTypes['public']['StudyPlanSemester']['id'];
     number: FieldOutputTypes['public']['StudyPlanSemester']['number'];
     studyPlanId: FieldOutputTypes['public']['StudyPlanSemester']['studyPlanId'];
     disciplines: public_StudyPlanDiscipline[];
+    groups: public_StudyGroupPlanSemester[];
     studyPlan: public_StudyPlan;
     teachingAssignments: public_EmployeeDisciplineAssignment[];
-    readonly [RelationKeys]?: 'disciplines' | 'studyPlan' | 'teachingAssignments';
+    readonly [RelationKeys]?: 'disciplines' | 'groups' | 'studyPlan' | 'teachingAssignments';
   };
   export type public_StudyProgram = {
     id: FieldOutputTypes['public']['StudyProgram']['id'];
@@ -604,7 +628,9 @@ export declare const models: {
     StudentEnrollment: Models.public_StudentEnrollment;
     StudentLicense: Models.public_StudentLicense;
     StudyGroup: Models.public_StudyGroup;
+    StudyGroupPlanSemester: Models.public_StudyGroupPlanSemester;
     StudyPlan: Models.public_StudyPlan;
+    StudyPlanAssessment: Models.public_StudyPlanAssessment;
     StudyPlanDiscipline: Models.public_StudyPlanDiscipline;
     StudyPlanSemester: Models.public_StudyPlanSemester;
     StudyProgram: Models.public_StudyProgram;
@@ -1192,6 +1218,12 @@ type ContractBase = Omit<
             };
             readonly employee_discipline_assignments: {
               columns: {
+                readonly academicYear: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly disciplineId: {
                   readonly dataType: 'pg/int4';
                   readonly codecId: 'pg/int4@1';
@@ -1257,6 +1289,11 @@ type ContractBase = Omit<
                 {
                   readonly name: 'employee_discipline_semester_idx';
                   readonly columns: readonly ['disciplineId', 'semesterId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'employee_discipline_year_idx';
+                  readonly columns: readonly ['disciplineId', 'academicYear'];
                   readonly unique: false;
                 },
                 {
@@ -1908,6 +1945,103 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly study_group_plan_semesters: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                  readonly many: false;
+                };
+                readonly semesterId: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly studyGroupId: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly studyPlanSemesterId: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['studyGroupId', 'semesterId'];
+                  readonly name: 'group_plan_calendar_semester_key';
+                },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'study_group_plan_semesters_semesterId_idx_c8bca8d0';
+                  readonly prefix: 'study_group_plan_semesters_semesterId_idx';
+                  readonly columns: readonly ['semesterId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'study_group_plan_semesters_studyGroupId_idx_b7300630';
+                  readonly prefix: 'study_group_plan_semesters_studyGroupId_idx';
+                  readonly columns: readonly ['studyGroupId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'study_group_plan_semesters_studyPlanSemesterId_idx_53cb93a2';
+                  readonly prefix: 'study_group_plan_semesters_studyPlanSemesterId_idx';
+                  readonly columns: readonly ['studyPlanSemesterId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_group_plan_semesters';
+                    readonly columns: readonly ['studyGroupId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_groups';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_group_plan_semesters';
+                    readonly columns: readonly ['semesterId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'semesters';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_group_plan_semesters';
+                    readonly columns: readonly ['studyPlanSemesterId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_plan_semesters';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly study_groups: {
               columns: {
                 readonly id: {
@@ -2001,6 +2135,61 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'study_plans';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly study_plan_assessments: {
+              columns: {
+                readonly controlForm: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                  readonly many: false;
+                };
+                readonly studyPlanDisciplineId: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                {
+                  readonly columns: readonly ['studyPlanDisciplineId', 'controlForm'];
+                  readonly name: 'study_plan_assessment_form_key';
+                },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'study_plan_assessments_studyPlanDisciplineId_idx_dde5ce2b';
+                  readonly prefix: 'study_plan_assessments_studyPlanDisciplineId_idx';
+                  readonly columns: readonly ['studyPlanDisciplineId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_plan_assessments';
+                    readonly columns: readonly ['studyPlanDisciplineId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'study_plan_disciplines';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -2396,9 +2585,17 @@ type ContractBase = Omit<
       readonly model: 'StudentLicense';
     };
     readonly students: { readonly namespace: 'public' & NamespaceId; readonly model: 'Student' };
+    readonly study_group_plan_semesters: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'StudyGroupPlanSemester';
+    };
     readonly study_groups: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'StudyGroup';
+    };
+    readonly study_plan_assessments: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'StudyPlanAssessment';
     };
     readonly study_plan_disciplines: {
       readonly namespace: 'public' & NamespaceId;
@@ -2933,6 +3130,10 @@ type ContractBase = Omit<
           };
           readonly EmployeeDisciplineAssignment: {
             readonly fields: {
+              readonly academicYear: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
               readonly disciplineId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -3008,6 +3209,7 @@ type ContractBase = Omit<
               readonly table: 'employee_discipline_assignments';
               readonly namespaceId: 'public';
               readonly fields: {
+                readonly academicYear: { readonly column: 'academicYear' };
                 readonly disciplineId: { readonly column: 'disciplineId' };
                 readonly employeeId: { readonly column: 'employeeId' };
                 readonly id: { readonly column: 'id' };
@@ -3317,6 +3519,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'AttestationCommission';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['semesterId'];
+                };
+              };
+              readonly groupPlanSemesters: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyGroupPlanSemester';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -3639,6 +3852,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['studyGroupId'];
                 };
               };
+              readonly planSemesters: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyGroupPlanSemester';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['studyGroupId'];
+                };
+              };
               readonly records: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -3707,6 +3931,74 @@ type ContractBase = Omit<
                 readonly studyPlanId: { readonly column: 'study_plan_id' };
                 readonly studyProgramId: { readonly column: 'study_program_id' };
                 readonly suborganizationId: { readonly column: 'suborganization_id' };
+              };
+            };
+          };
+          readonly StudyGroupPlanSemester: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly semesterId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly studyGroupId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly studyPlanSemesterId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly semester: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Semester';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['semesterId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly studyGroup: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyGroup';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['studyGroupId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly studyPlanSemester: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyPlanSemester';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['studyPlanSemesterId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'study_group_plan_semesters';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly semesterId: { readonly column: 'semesterId' };
+                readonly studyGroupId: { readonly column: 'studyGroupId' };
+                readonly studyPlanSemesterId: { readonly column: 'studyPlanSemesterId' };
               };
             };
           };
@@ -3786,6 +4078,45 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly StudyPlanAssessment: {
+            readonly fields: {
+              readonly controlForm: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly studyPlanDisciplineId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly studyPlanDiscipline: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyPlanDiscipline';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['studyPlanDisciplineId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'study_plan_assessments';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly controlForm: { readonly column: 'controlForm' };
+                readonly id: { readonly column: 'id' };
+                readonly studyPlanDisciplineId: { readonly column: 'studyPlanDisciplineId' };
+              };
+            };
+          };
           readonly StudyPlanDiscipline: {
             readonly fields: {
               readonly controlForm: {
@@ -3810,6 +4141,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly assessments: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyPlanAssessment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['studyPlanDisciplineId'];
+                };
+              };
               readonly fgosDiscipline: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -3867,6 +4209,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'StudyPlanDiscipline';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['studyPlanSemesterId'];
+                };
+              };
+              readonly groups: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StudyGroupPlanSemester';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {

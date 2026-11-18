@@ -1,0 +1,216 @@
+import { db } from '../../prisma/db.js';
+import { ImportValidationError } from './parsers/excel.parser.js';
+
+type PlanDiscipline = {
+  code: string;
+  name: string;
+  semester: number;
+  controlForms: string[];
+  plannedHours?: number;
+};
+
+type GroupPeriod = { studyGroupId: number; semesterId: number; semester: number };
+
+type PlanInput = {
+  studyProgramId: number;
+  admissionBase: 9 | 11;
+  admissionYear: number;
+  semesterCount: number;
+  name?: string;
+  sourceFileName?: string;
+  disciplines: PlanDiscipline[];
+  groupPeriods: GroupPeriod[];
+};
+
+function object(value: unknown, field: string): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ImportValidationError(`${field}: ожидается объект`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function integer(value: unknown, field: string, min: number, max = 2147483647): number {
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < min || value > max) {
+    throw new ImportValidationError(`${field}: ожидается целое число от ${min} до ${max}`);
+  }
+  return value;
+}
+
+function text(value: unknown, field: string, maxLength: number): string {
+  if (typeof value !== 'string' || !value.trim() || value.trim().length > maxLength || value.includes('\u0000')) {
+    throw new ImportValidationError(`${field}: ожидается строка длиной от 1 до ${maxLength}`);
+  }
+  return value.trim().normalize('NFC');
+}
+
+export function parseStudyPlan(value: unknown): PlanInput {
+  const input = object(value, 'Учебный план');
+  const admissionBase = input['admissionBase'];
+  if (admissionBase !== 9 && admissionBase !== 11) {
+    throw new ImportValidationError('admissionBase: укажите 9 или 11 класс');
+  }
+  const semesterCount = admissionBase === 9 ? 8 : 6;
+  if (!Array.isArray(input['disciplines']) || input['disciplines'].length === 0) {
+    throw new ImportValidationError('disciplines: укажите строки учебного плана');
+  }
+  const namesByCode = new Map<string, string>();
+  const disciplineKeys = new Set<string>();
+  const disciplines = input['disciplines'].map((value, index) => {
+    const field = `disciplines[${index}]`;
+    const row = object(value, field);
+    const code = text(row['code'], `${field}.code`, 100);
+    const name = text(row['name'], `${field}.name`, 500);
+    const semester = integer(row['semester'], `${field}.semester`, 1, semesterCount);
+    const existingName = namesByCode.get(code);
+    if (existingName !== undefined && existingName !== name) {
+      throw new ImportValidationError(`${field}: у индекса ${code} два разных названия`);
+    }
+    namesByCode.set(code, name);
+    const key = `${semester}/${code}`;
+    if (disciplineKeys.has(key)) throw new ImportValidationError(`${field}: дисциплина повторяется в семестре ${semester}`);
+    disciplineKeys.add(key);
+    if (!Array.isArray(row['controlForms'])) {
+      throw new ImportValidationError(`${field}.controlForms: ожидается массив форм контроля`);
+    }
+    const controlForms = [...new Set(row['controlForms'].map((form) => text(form, `${field}.controlForms`, 150)))];
+    const plannedHours = row['plannedHours'] === undefined ? undefined :
+      integer(row['plannedHours'], `${field}.plannedHours`, 0);
+    return { code, name, semester, controlForms, plannedHours };
+  });
+  const rawPeriods = input['groupPeriods'] ?? [];
+  if (!Array.isArray(rawPeriods)) throw new ImportValidationError('groupPeriods: ожидается массив привязок групп');
+  const periodKeys = new Set<string>();
+  const groupPeriods = rawPeriods.map((value, index) => {
+    const field = `groupPeriods[${index}]`;
+    const row = object(value, field);
+    const studyGroupId = integer(row['studyGroupId'], `${field}.studyGroupId`, 1);
+    const semesterId = integer(row['semesterId'], `${field}.semesterId`, 1);
+    const semester = integer(row['semester'], `${field}.semester`, 1, semesterCount);
+    const key = `${studyGroupId}/${semesterId}`;
+    if (periodKeys.has(key)) throw new ImportValidationError(`${field}: календарный семестр группы повторяется`);
+    periodKeys.add(key);
+    return { studyGroupId, semesterId, semester };
+  });
+  return {
+    studyProgramId: integer(input['studyProgramId'], 'studyProgramId', 1),
+    admissionBase,
+    admissionYear: integer(input['admissionYear'], 'admissionYear', 1900, 9999),
+    semesterCount,
+    name: input['name'] === undefined ? undefined : text(input['name'], 'name', 500),
+    sourceFileName: input['sourceFileName'] === undefined ? undefined :
+      text(input['sourceFileName'], 'sourceFileName', 255),
+    disciplines,
+    groupPeriods,
+  };
+}
+
+export async function importStudyPlan(input: PlanInput) {
+  return db.transaction(async (tx) => {
+    const orm = tx.orm.public;
+    const program = await orm.StudyProgram.where({ id: input.studyProgramId }).first();
+    if (!program) throw new ImportValidationError('Образовательная программа не найдена');
+    const cohort = {
+      studyProgramId: input.studyProgramId,
+      admissionBase: input.admissionBase,
+      admissionYear: input.admissionYear,
+    };
+    const metadata = {
+      ...(input.name === undefined ? {} : { name: input.name }),
+      ...(input.sourceFileName === undefined ? {} : { sourceFileName: input.sourceFileName }),
+    };
+    const plan = await orm.StudyPlan.upsert({
+      conflictOn: cohort,
+      create: { ...cohort, ...metadata },
+      update: { admissionYear: cohort.admissionYear, ...metadata },
+    });
+    const previousSemesters = await orm.StudyPlanSemester.where({ studyPlanId: plan.id })
+      .include('disciplines', (discipline) => discipline.include('fgosDiscipline')).all();
+    const knownNames = new Map(input.disciplines.map(({ code, name }) => [code, name]));
+    for (const semester of previousSemesters) {
+      for (const entry of semester.disciplines) {
+        const discipline = entry.fgosDiscipline;
+        if (!discipline) continue;
+        const name = knownNames.get(discipline.code);
+        if (name !== undefined && name !== discipline.name) {
+          throw new ImportValidationError(`Индекс ${discipline.code} уже сохранён с другим названием в этом учебном плане`);
+        }
+      }
+    }
+    const semesterIds = new Map<number, number>();
+    for (let number = 1; number <= input.semesterCount; number += 1) {
+      const identity = { studyPlanId: plan.id, number };
+      const semester = await orm.StudyPlanSemester.upsert({
+        conflictOn: identity,
+        create: identity,
+        update: { number },
+      });
+      semesterIds.set(number, semester.id);
+    }
+
+    const fgosIds = new Map<string, number>();
+    for (const row of input.disciplines) {
+      let fgosDisciplineId = fgosIds.get(row.code);
+      if (fgosDisciplineId === undefined) {
+        const identity = { studyProgramId: program.id, code: row.code, name: row.name };
+        const fgos = await orm.FgosDiscipline.upsert({
+          conflictOn: identity,
+          create: identity,
+          update: { name: row.name },
+        });
+        fgosDisciplineId = fgos.id;
+        fgosIds.set(row.code, fgosDisciplineId);
+      }
+      const studyPlanSemesterId = semesterIds.get(row.semester)!;
+      const identity = { studyPlanSemesterId, fgosDisciplineId };
+      const hours = row.plannedHours === undefined ? {} : { plannedHours: row.plannedHours };
+      const entry = await orm.StudyPlanDiscipline.upsert({
+        conflictOn: identity,
+        create: { ...identity, ...hours },
+        update: { fgosDisciplineId, ...hours },
+      });
+      for (const controlForm of row.controlForms) {
+        const assessment = { studyPlanDisciplineId: entry.id, controlForm };
+        await orm.StudyPlanAssessment.upsert({
+          conflictOn: assessment,
+          create: assessment,
+          update: { controlForm },
+        });
+      }
+    }
+
+    for (const assignment of [...input.groupPeriods].sort((a, b) => a.studyGroupId - b.studyGroupId)) {
+      const { studyGroupId, semesterId, semester } = assignment;
+      const group = await orm.StudyGroup.where({ id: studyGroupId }).first();
+      if (!group || group.suborganizationId !== program.suborganizationId ||
+          (group.studyProgramId != null && group.studyProgramId !== program.id) ||
+          (group.studyPlanId != null && group.studyPlanId !== plan.id)) {
+        throw new ImportValidationError(`Группа ${studyGroupId} не найдена или относится к другой программе или учебному плану`);
+      }
+      if (!await orm.Semester.where({ id: semesterId }).first()) {
+        throw new ImportValidationError(`Календарный семестр ${semesterId} не найден`);
+      }
+      const updated = await orm.StudyGroup.where({
+        id: studyGroupId,
+        studyPlanId: group.studyPlanId,
+        studyProgramId: group.studyProgramId,
+      }).updateAndCount({ studyPlanId: plan.id, studyProgramId: program.id });
+      if (updated !== 1) throw new ImportValidationError(`Привязка группы ${studyGroupId} изменилась, повторите импорт`);
+      const studyPlanSemesterId = semesterIds.get(semester)!;
+      const period = await orm.StudyGroupPlanSemester.upsert({
+        conflictOn: { studyGroupId, semesterId },
+        create: { studyGroupId, semesterId, studyPlanSemesterId },
+        update: { semesterId },
+      });
+      if (period.studyPlanSemesterId !== studyPlanSemesterId) {
+        throw new ImportValidationError(`Для группы ${studyGroupId} и календарного семестра ${semesterId} уже задан другой семестр плана`);
+      }
+    }
+
+    return {
+      studyPlanId: plan.id,
+      semesterCount: input.semesterCount,
+      disciplineRows: input.disciplines.length,
+      groupPeriods: input.groupPeriods.length,
+    };
+  });
+}
