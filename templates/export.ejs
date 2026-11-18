@@ -3,17 +3,21 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Экспорт ведомости</title>
+    <title>Экспорт документов</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <main class="page-shell">
       <section class="upload-card export-card" aria-labelledby="page-title">
         <p class="eyebrow">IThub · документы</p>
-        <h1 id="page-title">Экспорт ведомости</h1>
-        <p class="intro">Сформируйте ведомость по дисциплине из импортированных оценок. Шаблон Excel берётся из папки <code>other</code>.</p>
+        <h1 id="page-title">Экспорт документов</h1>
 
         <form id="export-form">
+          <label class="field-label" for="document">Документ</label>
+          <select id="document">
+            <option value="discipline-register">Ведомость по дисциплине, предмету.xlsx</option>
+          </select>
+
           <label class="field-label" for="semester">Семестр</label>
           <select id="semester" name="semesterId" required><option value="">Загрузка…</option></select>
 
@@ -22,6 +26,9 @@
 
           <label class="field-label" for="discipline">Дисциплина</label>
           <select id="discipline" name="disciplineId" required><option value="">Загрузка…</option></select>
+
+          <label class="field-label" for="student" hidden>Студент</label>
+          <select id="student" name="studentId" hidden disabled><option value="">Выберите группу и семестр</option></select>
 
           <label class="field-label" for="specialty">Специальность</label>
           <input id="specialty" name="specialty" type="text" placeholder="Подтянется из данных группы, если настроено">
@@ -44,7 +51,7 @@
           <label class="field-label" for="teacher">Преподаватель</label>
           <input id="teacher" name="teacher" type="text" placeholder="Оставьте пустым, чтобы взять из выгрузки">
 
-          <button id="export-button" type="submit">Скачать ведомость .xlsx</button>
+          <button id="export-button" type="submit">Скачать документ</button>
         </form>
 
         <div id="result" class="result" role="status" aria-live="polite" hidden></div>
@@ -56,7 +63,48 @@
       const form = document.getElementById('export-form');
       const result = document.getElementById('result');
       const button = document.getElementById('export-button');
+      const template = document.getElementById('document');
+      const student = document.getElementById('student');
+      const groupSelect = document.getElementById('group');
+      const semesterSelect = document.getElementById('semester');
       let groupsById = new Map();
+      let studentsRequest = 0;
+
+      function showField(id, visible) {
+        const field = document.getElementById(id);
+        field.hidden = !visible;
+        field.disabled = !visible;
+        document.querySelector(`label[for="${id}"]`).hidden = !visible;
+      }
+
+      async function loadStudents() {
+        const request = ++studentsRequest;
+        const personal = template.selectedOptions[0].dataset.personal === 'true';
+        showField('student', personal);
+        fillSelect(student, [], 'Выберите группу и семестр');
+        if (!personal || !groupSelect.value || !semesterSelect.value) return;
+        const query = new URLSearchParams({ groupId: groupSelect.value, semesterId: semesterSelect.value });
+        try {
+          const response = await fetch(`/api/export/document-students?${query}`);
+          const items = await response.json();
+          if (request !== studentsRequest) return;
+          if (!response.ok) throw new Error(items.error || 'Не удалось получить список студентов');
+          fillSelect(student, items, 'Выберите студента');
+        } catch (error) {
+          if (request === studentsRequest) showError(error.message);
+        }
+      }
+
+      function updateFields() {
+        const subjectRegister = template.value === 'discipline-register';
+        for (const id of ['specialty', 'qualification', 'control-form', 'date', 'teacher']) {
+          showField(id, subjectRegister);
+        }
+        for (const id of ['semester', 'group', 'discipline', 'control-form']) {
+          document.getElementById(id).required = subjectRegister;
+        }
+        loadStudents();
+      }
 
       function fillSelect(element, items, placeholder) {
         element.replaceChildren(new Option(placeholder, ''));
@@ -82,10 +130,22 @@
 
       loadOptions().catch((error) => showError(error.message || 'Ошибка загрузки справочников'));
 
-      document.getElementById('group').addEventListener('change', (event) => {
+      fetch('/api/export/documents').then(async (response) => {
+        if (!response.ok) throw new Error('Не удалось получить список документов');
+        for (const { id, filename, personal } of await response.json()) {
+          const option = new Option(filename, id);
+          option.dataset.personal = String(personal);
+          template.add(option);
+        }
+      }).catch((error) => showError(error.message));
+
+      template.addEventListener('change', updateFields);
+      semesterSelect.addEventListener('change', loadStudents);
+      groupSelect.addEventListener('change', (event) => {
         const group = groupsById.get(event.currentTarget.value);
-        if (group?.specialty) document.getElementById('specialty').value = group.specialty;
-        if (group?.qualification) document.getElementById('qualification').value = group.qualification;
+        document.getElementById('specialty').value = group?.specialty || '';
+        document.getElementById('qualification').value = group?.qualification || '';
+        loadStudents();
       });
 
       form.addEventListener('submit', async (event) => {
@@ -96,7 +156,10 @@
 
         try {
           const payload = Object.fromEntries(new FormData(form));
-          const response = await fetch('/api/export/discipline-register', {
+          const endpoint = template.value === 'discipline-register'
+            ? '/api/export/discipline-register'
+            : `/api/export/documents/${encodeURIComponent(template.value)}`;
+          const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -109,7 +172,7 @@
 
           const filenameHeader = response.headers.get('Content-Disposition') || '';
           const encodedName = filenameHeader.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
-          const filename = encodedName ? decodeURIComponent(encodedName) : 'ведомость.xlsx';
+          const filename = encodedName ? decodeURIComponent(encodedName) : template.selectedOptions[0].text;
           const url = URL.createObjectURL(await response.blob());
           const link = document.createElement('a');
           link.href = url;
@@ -119,12 +182,12 @@
 
           result.hidden = false;
           result.className = 'result result-success';
-          result.textContent = 'Ведомость сформирована и скачана.';
+          result.textContent = 'Документ сформирован и скачан.';
         } catch (error) {
           showError(error.message || 'Ошибка экспорта');
         } finally {
           button.disabled = false;
-          button.textContent = 'Скачать ведомость .xlsx';
+          button.textContent = 'Скачать документ';
         }
       });
     </script>

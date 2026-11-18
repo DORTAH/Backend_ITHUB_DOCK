@@ -30,7 +30,7 @@ function nonEmpty(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function safeFilenamePart(value: string): string {
+export function safeFilenamePart(value: string): string {
   return value.normalize('NFC').replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim();
 }
 
@@ -68,11 +68,23 @@ export async function getExportOptions() {
   };
 }
 
-async function findTemplate(): Promise<Buffer> {
+export async function readExportTemplate(name: string): Promise<Buffer> {
   const files = await readdir(templateDirectory);
-  const templateFile = files.find((file) => file.normalize('NFC') === subjectRegisterTemplate.normalize('NFC'));
-  if (!templateFile) throw new Error(`Не найден шаблон «${subjectRegisterTemplate}» в папке other`);
+  const templateFile = files.find((file) => file.normalize('NFC') === name.normalize('NFC'));
+  if (!templateFile) throw new Error(`Не найден шаблон «${name}» в папке other`);
   return readFile(resolve(templateDirectory, templateFile));
+}
+
+export function clearYellowFill(sheet: ExcelJS.Worksheet) {
+  sheet.eachRow({ includeEmpty: true }, (row) => {
+    row.eachCell({ includeEmpty: true }, (cell) => {
+      const fill = cell.fill;
+      const color = fill?.type === 'pattern' ? fill.fgColor : undefined;
+      if (color && 'indexed' in color && color.indexed === 5) {
+        cell.style = { ...cell.style, fill: { type: 'pattern', pattern: 'none' } };
+      }
+    });
+  });
 }
 
 export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
@@ -124,8 +136,6 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
     throw new ExportValidationError('Для выбранной группы, семестра и дисциплины нет импортированных оценок');
   }
 
-  // Re-imports of a semester can contain the same student more than once.
-  // Keep that student's row from the most recently imported source file.
   type ExportRow = (typeof rows)[number] & {
     student: NonNullable<(typeof rows)[number]['student']>;
     importBatch: NonNullable<(typeof rows)[number]['importBatch']>;
@@ -148,12 +158,17 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   });
 
   const workbook = new ExcelJS.Workbook();
-  const templateBytes = new Uint8Array(await findTemplate());
+  const templateBytes = new Uint8Array(await readExportTemplate(subjectRegisterTemplate));
   const templateArrayBuffer = new ArrayBuffer(templateBytes.byteLength);
   new Uint8Array(templateArrayBuffer).set(templateBytes);
   await workbook.xlsx.load(templateArrayBuffer);
   const sheet = workbook.worksheets[0];
   if (!sheet) throw new Error('В шаблоне не найден лист для ведомости');
+
+  for (const address of ['G5', 'B47', 'C49', 'C50', 'C66']) {
+    sheet.getCell(address).value = null;
+  }
+  clearYellowFill(sheet);
 
   const teacher = nonEmpty(input.teacher)
     ? input.teacher.trim()
@@ -195,10 +210,6 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
     sheet.getCell(`D${rowNumber}`).value = record.finalPointsFivePointScale;
   });
 
-  // The supplied template contains sample students and print instructions.
-  // Keep the original file unchanged and strip those sample-only areas from this export.
-  sheet.getCell('G5').value = null;
-  for (const cell of ['B47', 'C49', 'C50', 'C66']) sheet.getCell(cell).value = null;
   sheet.pageSetup.printArea = `A1:E${Math.max(45, lastStudentRow + 4)}`;
   sheet.pageSetup.fitToPage = true;
   sheet.pageSetup.fitToWidth = 1;
