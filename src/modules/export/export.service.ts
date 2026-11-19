@@ -39,13 +39,13 @@ function uniqueNames(values: Array<string | null>): string {
 }
 
 export async function getExportOptions() {
-  const [groups, groupPeriods, disciplines] = await Promise.all([
+  const [groups, records, disciplines] = await Promise.all([
     db.orm.public.StudyGroup
       .include('suborganization', (suborganization) => suborganization.select('name'))
       .include('studyProgram', (program) => program.select('specialtyCode', 'name', 'qualification'))
       .orderBy((group) => group.name.asc())
       .all(),
-    db.orm.public.StudyGroupPlanSemester.select('semesterNumber', 'semesterLabel').all(),
+    db.orm.public.AcademicPerformance.select('semesterId').all(),
     db.orm.public.Discipline
       .include('suborganization', (suborganization) => suborganization.select('name'))
       .orderBy((discipline) => discipline.code.asc())
@@ -61,7 +61,7 @@ export async function getExportOptions() {
         qualification: studyProgram?.qualification ?? '',
       }]
       : []),
-    semesters: [...new Set(groupPeriods.map(({ semesterNumber }) => semesterNumber))]
+    semesters: [...new Set(records.map(({ semesterId }) => semesterId))]
       .sort((left, right) => left - right)
       .map((semesterNumber) => ({ id: semesterNumber, name: `Семестр ${semesterNumber}` })),
     disciplines: disciplines.flatMap(({ id, code, name, suborganization }) => suborganization
@@ -95,16 +95,12 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   }
   if (!nonEmpty(input.controlForm)) throw new ExportValidationError('Укажите форму контроля');
 
-  const [group, period, discipline, rows] = await Promise.all([
+  const [group, discipline, rawRows] = await Promise.all([
     db.orm.public.StudyGroup
       .include('suborganization', (suborganization) => suborganization.select('id', 'name'))
       .include('studyProgram', (program) => program.select('specialtyCode', 'name', 'qualification'))
       .where({ id: input.groupId })
       .first(),
-    db.orm.public.StudyGroupPlanSemester.where({
-      studyGroupId: input.groupId,
-      semesterNumber: input.semesterNumber,
-    }).first(),
     db.orm.public.Discipline
       .include('suborganization', (suborganization) => suborganization.select('id', 'name'))
       .where({ id: input.disciplineId })
@@ -115,13 +111,11 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
         semesterId: input.semesterNumber,
         disciplineId: input.disciplineId,
       })
-      .include('student', (student) => student.select('lastName', 'firstName', 'patronymic'))
-      .include('importBatch', (batch) => batch.select('importedAt'))
       .orderBy((record) => record.sourceRowNumber.asc())
       .all(),
   ]);
 
-  if (!group || !period || !discipline) {
+  if (!group || !discipline) {
     throw new ExportValidationError('Выбранные группа, семестр или дисциплина не найдены');
   }
   if (!group.suborganization || !discipline.suborganization) {
@@ -137,19 +131,19 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   if (!specialty || !qualification) {
     throw new ExportValidationError('Для этой группы не заполнены специальность и квалификация');
   }
-  if (rows.length === 0) {
+  if (rawRows.length === 0) {
     throw new ExportValidationError('Для выбранной группы, семестра и дисциплины нет импортированных оценок');
   }
 
-  type ExportRow = (typeof rows)[number] & {
-    student: NonNullable<(typeof rows)[number]['student']>;
-    importBatch: NonNullable<(typeof rows)[number]['importBatch']>;
-  };
-  const rowsWithRelations = rows.filter((row): row is ExportRow => Boolean(row.student && row.importBatch));
-  if (rowsWithRelations.length !== rows.length) {
-    throw new Error('В части записей отсутствует студент или исходная загрузка');
-  }
-  const latestByStudent = new Map<number, ExportRow>();
+  const rowsWithRelations = await Promise.all(rawRows.map(async (row) => {
+    const [student, importBatch] = await Promise.all([
+      db.orm.public.Student.where({ id: row.studentId }).first(),
+      db.orm.public.ImportBatch.where({ id: row.importBatchId }).first(),
+    ]);
+    if (!student || !importBatch) throw new Error('В части записей отсутствует студент или исходная загрузка');
+    return { ...row, student, importBatch };
+  }));
+  const latestByStudent = new Map<number, (typeof rowsWithRelations)[number]>();
   for (const row of rowsWithRelations) {
     const previous = latestByStudent.get(row.studentId);
     if (!previous || row.importBatch.importedAt > previous.importBatch.importedAt) {
@@ -178,17 +172,18 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   const teacher = nonEmpty(input.teacher)
     ? input.teacher.trim()
     : uniqueNames(rowsWithRelations.flatMap((row) => [row.teachersWhoGraded, row.teachersFromWorkload]));
-  const academicYear = period.academicYear ?? period.semesterLabel.match(/(\d{2})\s*[-/]\s*(\d{2})/)?.slice(1)
+  const periodLabel = rowsWithRelations[0]?.importBatch.semester ?? `Семестр ${input.semesterNumber}`;
+  const academicYear = periodLabel.match(/(\d{2})\s*[-/]\s*(\d{2})/)?.slice(1)
     .map((year) => `20${year}`).join('/');
   const yearLabel = academicYear ? `${academicYear.replace('/', '-')} г.` : '';
-  const semesterName = period.semesterLabel.toLocaleLowerCase('ru');
+  const semesterName = periodLabel.toLocaleLowerCase('ru');
   const halfYear = semesterName.includes('осенн')
     ? 'I полугодие'
     : semesterName.includes('весенн')
       ? 'II полугодие'
       : '';
 
-  sheet.getCell('B5').value = `Зачетно-экзаменационная ведомость за ${[halfYear, yearLabel].filter(Boolean).join(' ') || period.semesterLabel}`;
+  sheet.getCell('B5').value = `Зачетно-экзаменационная ведомость за ${[halfYear, yearLabel].filter(Boolean).join(' ') || periodLabel}`;
   sheet.getCell('B6').value = `Специальность – ${specialty}`;
   sheet.getCell('B7').value = `Группа ${group.name}, квалификация: ${qualification}`;
   sheet.getCell('B8').value = `Форма контроля: ${input.controlForm.trim()}`;
@@ -222,7 +217,7 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   sheet.pageSetup.fitToHeight = 0;
 
   const buffer = await workbook.xlsx.writeBuffer();
-  const filename = [group.name, period.semesterLabel, discipline.code, 'ведомость']
+  const filename = [group.name, periodLabel, discipline.code, 'ведомость']
     .map(safeFilenamePart)
     .filter(Boolean)
     .join('_') + '.xlsx';

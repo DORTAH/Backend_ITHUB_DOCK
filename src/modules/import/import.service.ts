@@ -10,11 +10,6 @@ function createLookup<T>() {
   return new Map<string, T>();
 }
 
-function academicYearFromSemester(semester: string): string | null {
-  const match = semester.match(/(?:^|\s)(\d{2})[-/](\d{2})(?:\s|$)/);
-  return match ? `20${match[1]}/20${match[2]}` : null;
-}
-
 export type ImportResult = {
   batchId: number;
   sourceFileName: string;
@@ -46,7 +41,6 @@ export async function importExcel(filePath: string, originalName: string): Promi
     const students = createLookup<number>();
     const groups = createLookup<number>();
     const disciplines = createLookup<number>();
-    const enrollments = new Set<string>();
 
     const resolveId = async <T extends { id: number }>(
       cache: Map<string, number>,
@@ -91,38 +85,9 @@ export async function importExcel(filePath: string, originalName: string): Promi
         () => tx.orm.public.StudyGroup.where({ suborganizationId, name: row.groupName }).first(),
         () => tx.orm.public.StudyGroup.create({ suborganizationId, name: row.groupName }),
       );
-      const groupPeriod = await tx.orm.public.StudyGroupPlanSemester
-        .where({ studyGroupId: groupId, semesterLabel: row.semester })
-        .first();
-      if (!groupPeriod) {
-        throw new ImportValidationError(`Для группы «${row.groupName}» не настроено соответствие семестра «${row.semester}» учебному плану`);
-      }
-      const semesterNumber = groupPeriod.semesterNumber;
-      const academicYear = academicYearFromSemester(row.semester);
-      const enrollmentKey = `${studentId}\u0000${row.semester}`;
-      if (!enrollments.has(enrollmentKey)) {
-        const existingEnrollment = await tx.orm.public.StudentEnrollment
-          .where({ studentId, semesterLabel: row.semester })
-          .first();
-
-        if (existingEnrollment) {
-          if (existingEnrollment.studyGroupId !== groupId ||
-              existingEnrollment.academicYear !== academicYear ||
-              existingEnrollment.semesterNumber !== semesterNumber) {
-            await tx.orm.public.StudentEnrollment
-              .where({ id: existingEnrollment.id })
-              .update({ studyGroupId: groupId, academicYear, semesterNumber });
-          }
-        } else {
-          await tx.orm.public.StudentEnrollment.create({
-            studentId,
-            semesterLabel: row.semester,
-            semesterNumber,
-            studyGroupId: groupId,
-            academicYear,
-          });
-        }
-        enrollments.add(enrollmentKey);
+      const group = await tx.orm.public.StudyGroup.where({ id: groupId }).first();
+      if (!group?.studyPlanId) {
+        throw new ImportValidationError(`Для группы «${row.groupName}» не назначен учебный план`);
       }
       const disciplineKey = `${suborganizationId}\u0000${row.disciplineCode}\u0000${row.disciplineName}`;
       const disciplineId = await resolveId(
@@ -138,6 +103,22 @@ export async function importExcel(filePath: string, originalName: string): Promi
           name: row.disciplineName,
         }),
       );
+      const mappings = await tx.orm.public.FgosDisciplineMapping
+        .where({ disciplineId }).all();
+      const semesterNumbers = new Set<number>();
+      for (const mapping of mappings) {
+        const planned = await tx.orm.public.StudyPlanDiscipline
+          .where({ studyPlanId: group.studyPlanId, fgosDisciplineId: mapping.fgosDisciplineId }).all();
+        for (const entry of planned) semesterNumbers.add(entry.semesterNumber);
+      }
+      if (semesterNumbers.size !== 1) {
+        throw new ImportValidationError(
+          semesterNumbers.size === 0
+            ? `Дисциплина «${row.disciplineName}» не сопоставлена с ФГОС в учебном плане группы «${row.groupName}»`
+            : `Для дисциплины «${row.disciplineName}» в учебном плане найдено несколько семестров`,
+        );
+      }
+      const semesterNumber = [...semesterNumbers][0]!;
       const {
         sourceRowNumber,
         organization: _organization,

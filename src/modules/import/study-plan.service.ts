@@ -9,8 +9,6 @@ type PlanDiscipline = {
   plannedHours?: number;
 };
 
-type GroupPeriod = { studyGroupId: number; semesterLabel: string; semesterNumber: number };
-
 type PlanInput = {
   studyProgramId: number;
   admissionBase: 9 | 11;
@@ -19,7 +17,7 @@ type PlanInput = {
   name?: string;
   sourceFileName?: string;
   disciplines: PlanDiscipline[];
-  groupPeriods: GroupPeriod[];
+  studyGroupIds: number[];
 };
 
 function object(value: unknown, field: string): Record<string, unknown> {
@@ -77,20 +75,9 @@ export function parseStudyPlan(value: unknown): PlanInput {
       integer(row['plannedHours'], `${field}.plannedHours`, 0);
     return { code, name, semester, controlForms, plannedHours };
   });
-  const rawPeriods = input['groupPeriods'] ?? [];
-  if (!Array.isArray(rawPeriods)) throw new ImportValidationError('groupPeriods: ожидается массив привязок групп');
-  const periodKeys = new Set<string>();
-  const groupPeriods = rawPeriods.map((value, index) => {
-    const field = `groupPeriods[${index}]`;
-    const row = object(value, field);
-    const studyGroupId = integer(row['studyGroupId'], `${field}.studyGroupId`, 1);
-    const semesterLabel = text(row['semesterLabel'], `${field}.semesterLabel`, 255);
-    const semesterNumber = integer(row['semesterNumber'], `${field}.semesterNumber`, 1, semesterCount);
-    const key = `${studyGroupId}/${semesterLabel}`;
-    if (periodKeys.has(key)) throw new ImportValidationError(`${field}: календарный семестр группы повторяется`);
-    periodKeys.add(key);
-    return { studyGroupId, semesterLabel, semesterNumber };
-  });
+  const rawGroupIds = input['studyGroupIds'] ?? [];
+  if (!Array.isArray(rawGroupIds)) throw new ImportValidationError('studyGroupIds: ожидается массив идентификаторов групп');
+  const studyGroupIds = [...new Set(rawGroupIds.map((id, index) => integer(id, `studyGroupIds[${index}]`, 1)))];
   return {
     studyProgramId: integer(input['studyProgramId'], 'studyProgramId', 1),
     admissionBase,
@@ -100,7 +87,7 @@ export function parseStudyPlan(value: unknown): PlanInput {
     sourceFileName: input['sourceFileName'] === undefined ? undefined :
       text(input['sourceFileName'], 'sourceFileName', 255),
     disciplines,
-    groupPeriods,
+    studyGroupIds,
   };
 }
 
@@ -166,8 +153,8 @@ export async function importStudyPlan(input: PlanInput) {
       }
     }
 
-    for (const assignment of [...input.groupPeriods].sort((a, b) => a.studyGroupId - b.studyGroupId)) {
-      const { studyGroupId, semesterLabel, semesterNumber } = assignment;
+    const groupIds = [...input.studyGroupIds].sort((a, b) => a - b);
+    for (const studyGroupId of groupIds) {
       const group = await orm.StudyGroup.where({ id: studyGroupId }).first();
       if (!group || group.suborganizationId !== program.suborganizationId ||
           (group.studyProgramId != null && group.studyProgramId !== program.id) ||
@@ -180,24 +167,14 @@ export async function importStudyPlan(input: PlanInput) {
         studyProgramId: group.studyProgramId,
       }).updateAndCount({ studyPlanId: plan.id, studyProgramId: program.id });
       if (updated !== 1) throw new ImportValidationError(`Привязка группы ${studyGroupId} изменилась, повторите импорт`);
-      const identity = { studyGroupId, semesterLabel };
-      await orm.StudyGroupPlanSemester.upsert({
-        conflictOn: identity,
-        create: { ...identity, semesterNumber, academicYear: academicYearFromSemester(semesterLabel) },
-        update: { semesterNumber, academicYear: academicYearFromSemester(semesterLabel) },
-      });
     }
 
     return {
       studyPlanId: plan.id,
       semesterCount: input.semesterCount,
       disciplineRows: input.disciplines.length,
-      groupPeriods: input.groupPeriods.length,
+      groupsLinked: groupIds.length,
     };
   });
 }
 
-function academicYearFromSemester(semester: string): string | null {
-  const match = semester.match(/(?:^|\s)(\d{2})[-/](\d{2})(?:\s|$)/);
-  return match ? `20${match[1]}/20${match[2]}` : null;
-}

@@ -1,0 +1,1147 @@
+[
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_disciplineId_fkey",
+    "label": "Drop constraint \"academic_performance_records_disciplineId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_disciplineId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_disciplineId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_disciplineId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_disciplineId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_disciplineId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_disciplineId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_disciplineId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_disciplineId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_disciplineId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_importBatchId_fkey",
+    "label": "Drop constraint \"academic_performance_records_importBatchId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_importBatchId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_importBatchId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_importBatchId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_importBatchId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_importBatchId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_importBatchId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_importBatchId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_importBatchId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_importBatchId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_organizationId_fkey",
+    "label": "Drop constraint \"academic_performance_records_organizationId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_organizationId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_organizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_organizationId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_organizationId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_organizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_organizationId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_organizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_organizationId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_organizationId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_studentId_fkey",
+    "label": "Drop constraint \"academic_performance_records_studentId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_studentId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_studentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_studentId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_studentId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_studentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_studentId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_studentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_studentId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_studentId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_studyGroupId_fkey",
+    "label": "Drop constraint \"academic_performance_records_studyGroupId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_studyGroupId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_studyGroupId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_studyGroupId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_studyGroupId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_studyGroupId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_studyGroupId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_studyGroupId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_studyGroupId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_studyGroupId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.academic_performance_records.academic_performance_records_suborganizationId_fkey",
+    "label": "Drop constraint \"academic_performance_records_suborganizationId_fkey\" on \"academic_performance_records\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "academic_performance_records_suborganizationId_fkey",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"academic_performance_records_suborganizationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_suborganizationId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"academic_performance_records_suborganizationId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"academic_performance_records_suborganizationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"academic_performance_records\" DROP CONSTRAINT \"academic_performance_records_suborganizationId_fkey\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"academic_performance_records_suborganizationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "academic_performance_records_suborganizationId_fkey",
+          "public",
+          "\"public\".\"academic_performance_records\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"academic_performance_records_suborganizationId_fkey\" on \"academic_performance_records\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.employee_positions.employee_position_key",
+    "label": "Drop constraint \"employee_position_key\" on \"employee_positions\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "employee_position_key",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employee_position_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_position_key",
+          "public",
+          "\"public\".\"employee_positions\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"employee_position_key\" on \"employee_positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"employee_position_key\"",
+        "sql": "ALTER TABLE \"public\".\"employee_positions\" DROP CONSTRAINT \"employee_position_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employee_position_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_position_key",
+          "public",
+          "\"public\".\"employee_positions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"employee_position_key\" on \"employee_positions\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_disciplineId_idx_e8c0205f",
+    "label": "Drop index \"academic_performance_records_disciplineId_idx_e8c0205f\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_disciplineId_idx_e8c0205f",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_disciplineId_idx_e8c0205f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_disciplineId_idx_e8c0205f\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_disciplineId_idx_e8c0205f\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_disciplineId_idx_e8c0205f\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_disciplineId_idx_e8c0205f\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_disciplineId_idx_e8c0205f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_disciplineId_idx_e8c0205f\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_disciplineId_idx_e8c0205f\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_importBatchId_idx_172660b3",
+    "label": "Drop index \"academic_performance_records_importBatchId_idx_172660b3\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_importBatchId_idx_172660b3",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_importBatchId_idx_172660b3\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_importBatchId_idx_172660b3\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_importBatchId_idx_172660b3\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_importBatchId_idx_172660b3\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_importBatchId_idx_172660b3\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_importBatchId_idx_172660b3\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_importBatchId_idx_172660b3\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_importBatchId_idx_172660b3\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_organizationId_idx_2e17ef41",
+    "label": "Drop index \"academic_performance_records_organizationId_idx_2e17ef41\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_organizationId_idx_2e17ef41",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_organizationId_idx_2e17ef41\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_organizationId_idx_2e17ef41\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_organizationId_idx_2e17ef41\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_organizationId_idx_2e17ef41\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_organizationId_idx_2e17ef41\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_organizationId_idx_2e17ef41\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_organizationId_idx_2e17ef41\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_organizationId_idx_2e17ef41\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_studentId_idx_bf255322",
+    "label": "Drop index \"academic_performance_records_studentId_idx_bf255322\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_studentId_idx_bf255322",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_studentId_idx_bf255322\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_studentId_idx_bf255322\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_studentId_idx_bf255322\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_studentId_idx_bf255322\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_studentId_idx_bf255322\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_studentId_idx_bf255322\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_studentId_idx_bf255322\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_studentId_idx_bf255322\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_studyGroupId_idx_b7300630",
+    "label": "Drop index \"academic_performance_records_studyGroupId_idx_b7300630\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_studyGroupId_idx_b7300630",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_studyGroupId_idx_b7300630\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_studyGroupId_idx_b7300630\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_studyGroupId_idx_b7300630\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_studyGroupId_idx_b7300630\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_studyGroupId_idx_b7300630\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_studyGroupId_idx_b7300630\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_studyGroupId_idx_b7300630\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_studyGroupId_idx_b7300630\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropIndex.academic_performance_records.academic_performance_records_suborganizationId_idx_0edb9417",
+    "label": "Drop index \"academic_performance_records_suborganizationId_idx_0edb9417\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "academic_performance_records_suborganizationId_idx_0edb9417",
+        "table": "academic_performance_records"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"academic_performance_records_suborganizationId_idx_0edb9417\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_suborganizationId_idx_0edb9417\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "index \"academic_performance_records_suborganizationId_idx_0edb9417\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop index \"academic_performance_records_suborganizationId_idx_0edb9417\"",
+        "sql": "DROP INDEX \"public\".\"academic_performance_records_suborganizationId_idx_0edb9417\"",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"academic_performance_records_suborganizationId_idx_0edb9417\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"academic_performance_records_suborganizationId_idx_0edb9417\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"academic_performance_records_suborganizationId_idx_0edb9417\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropTable.employee_discipline_assignments",
+    "label": "Drop table \"employee_discipline_assignments\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "employee_discipline_assignments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"employee_discipline_assignments\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"employee_discipline_assignments\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"employee_discipline_assignments\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"employee_discipline_assignments\"",
+        "sql": "DROP TABLE \"public\".\"employee_discipline_assignments\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"employee_discipline_assignments\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"employee_discipline_assignments\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"employee_discipline_assignments\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.employee_positions.title",
+    "label": "Drop column \"title\" from \"employee_positions\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "title",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"title\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "title"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"title\" on \"employee_positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"title\"",
+        "sql": "ALTER TABLE \"public\".\"employee_positions\" DROP COLUMN \"title\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"title\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "title"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"title\" on \"employee_positions\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropTable.student_enrollments",
+    "label": "Drop table \"student_enrollments\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "student_enrollments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"student_enrollments\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_enrollments\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"student_enrollments\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"student_enrollments\"",
+        "sql": "DROP TABLE \"public\".\"student_enrollments\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"student_enrollments\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"student_enrollments\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"student_enrollments\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropTable.study_group_plan_semesters",
+    "label": "Drop table \"study_group_plan_semesters\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "study_group_plan_semesters"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"study_group_plan_semesters\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"study_group_plan_semesters\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"study_group_plan_semesters\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"study_group_plan_semesters\"",
+        "sql": "DROP TABLE \"public\".\"study_group_plan_semesters\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"study_group_plan_semesters\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"study_group_plan_semesters\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"study_group_plan_semesters\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.positions",
+    "label": "Create table \"positions\"",
+    "summary": "Creates table \"positions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"positions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"positions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"positions\"",
+        "sql": "CREATE TABLE \"public\".\"positions\" (\n  \"id\" SERIAL NOT NULL,\n  \"title\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"positions\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"positions\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"positions\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.employee_positions.positionId",
+    "label": "Add column positionId to employee_positions",
+    "summary": "Adds column positionId to table employee_positions",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "positionId",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"positionId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "positionId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"positionId\" on \"employee_positions\""
+        }
+      },
+      {
+        "description": "ensure table \"employee_positions\" is empty before adding NOT NULL column without default",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"public\".\"employee_positions\" LIMIT 1) AS \"result\"",
+        "params": [],
+        "meta": {
+          "requiredColumn": {
+            "table": "employee_positions",
+            "column": "positionId",
+            "reason": "newField"
+          }
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"positionId\"",
+        "sql": "ALTER TABLE \"public\".\"employee_positions\" ADD COLUMN \"positionId\" int4 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"positionId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "positionId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"positionId\" on \"employee_positions\""
+        }
+      },
+      {
+        "description": "verify column \"positionId\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "positionId",
+          "NO"
+        ]
+      },
+      {
+        "description": "verify column \"positionId\" has type \"integer\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "employee_positions",
+          "positionId",
+          "integer"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.employee_positions.employee_position_key",
+    "label": "Add unique constraint on \"employee_positions\" (employeeId, positionId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "employee_position_key",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employee_position_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_position_key",
+          "public",
+          "\"public\".\"employee_positions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"employee_position_key\" on \"employee_positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"employee_position_key\"",
+        "sql": "ALTER TABLE \"public\".\"employee_positions\" ADD CONSTRAINT \"employee_position_key\" UNIQUE (\"employeeId\", \"positionId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"employee_position_key\" exists on (employeeId, positionId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "employee_position_key",
+          "public",
+          "\"public\".\"employee_positions\"",
+          "u",
+          "[\"employeeId\",\"positionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.positions.positions_title_key",
+    "label": "Add unique constraint on \"positions\" (title)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "positions_title_key",
+        "table": "positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"positions_title_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "positions_title_key",
+          "public",
+          "\"public\".\"positions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"positions_title_key\" on \"positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"positions_title_key\"",
+        "sql": "ALTER TABLE \"public\".\"positions\" ADD CONSTRAINT \"positions_title_key\" UNIQUE (\"title\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"positions_title_key\" exists on (title)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "positions_title_key",
+          "public",
+          "\"public\".\"positions\"",
+          "u",
+          "[\"title\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.employee_positions.employee_positions_positionId_idx_f0417710",
+    "label": "Create index \"employee_positions_positionId_idx_f0417710\" on \"employee_positions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "employee_positions_positionId_idx_f0417710",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"employee_positions_positionId_idx_f0417710\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"employee_positions_positionId_idx_f0417710\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"employee_positions_positionId_idx_f0417710\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"employee_positions_positionId_idx_f0417710\"",
+        "sql": "CREATE INDEX \"employee_positions_positionId_idx_f0417710\" ON \"public\".\"employee_positions\" (\"positionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"employee_positions_positionId_idx_f0417710\" exists on \"employee_positions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"employee_positions_positionId_idx_f0417710\"",
+          "i",
+          "I",
+          "\"public\".\"employee_positions\"",
+          "btree",
+          "[\"positionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.employee_positions.employee_positions_positionId_fkey",
+    "label": "Add foreign key \"employee_positions_positionId_fkey\" on \"employee_positions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "employee_positions_positionId_fkey",
+        "table": "employee_positions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"employee_positions_positionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_positions_positionId_fkey",
+          "public",
+          "\"public\".\"employee_positions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"employee_positions_positionId_fkey\" on \"employee_positions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"employee_positions_positionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"employee_positions\"\nADD CONSTRAINT \"employee_positions_positionId_fkey\"\nFOREIGN KEY (\"positionId\")\nREFERENCES \"public\".\"positions\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"employee_positions_positionId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "employee_positions_positionId_fkey",
+          "public",
+          "\"public\".\"employee_positions\"",
+          "f",
+          "[\"positionId\"]",
+          "\"public\".\"positions\"",
+          "[\"id\"]",
+          "a",
+          "a"
+        ]
+      }
+    ]
+  }
+]

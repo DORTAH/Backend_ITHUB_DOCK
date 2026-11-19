@@ -16,24 +16,31 @@ function studentName(student: { firstName: string; lastName: string; patronymic:
 
 export async function readDocumentData({ groupId, semesterNumber, disciplineId, studentId }: DocumentSelection, withCommission = false) {
   const orm = db.orm.public;
-  const [group, period, selectedDiscipline, enrollments, results] = await Promise.all([
+  const [group, selectedDiscipline, rawResults] = await Promise.all([
     groupId === undefined ? undefined : orm.StudyGroup.include('studyProgram').where({ id: groupId }).first(),
-    groupId === undefined || semesterNumber === undefined ? undefined : orm.StudyGroupPlanSemester
-      .where({ studyGroupId: groupId, semesterNumber }).first(),
     disciplineId === undefined ? undefined : orm.Discipline.where({ id: disciplineId }).first(),
-    groupId === undefined || semesterNumber === undefined ? [] : orm.StudentEnrollment
-      .where({ studyGroupId: groupId, semesterNumber }).include('student').all(),
     groupId === undefined || semesterNumber === undefined ? [] : orm.AcademicPerformance
-      .where({ studyGroupId: groupId, semesterId: semesterNumber }).include('student').include('discipline').include('importBatch').all(),
+      .where({ studyGroupId: groupId, semesterId: semesterNumber }).all(),
   ]);
 
-  if ((groupId !== undefined && !group) || (groupId !== undefined && semesterNumber !== undefined && !period) ||
-      (disciplineId !== undefined && !selectedDiscipline)) {
+  if ((groupId !== undefined && !group) || (disciplineId !== undefined && !selectedDiscipline)) {
     throw new ExportValidationError('Группа, семестр или дисциплина не найдены');
   }
   if (group && selectedDiscipline && group.suborganizationId !== selectedDiscipline.suborganizationId) {
     throw new ExportValidationError('Дисциплина не относится к подразделению группы');
   }
+
+  const results = await Promise.all(rawResults.map(async (row) => {
+    const [student, discipline, importBatch] = await Promise.all([
+      orm.Student.where({ id: row.studentId }).first(),
+      orm.Discipline.where({ id: row.disciplineId }).first(),
+      orm.ImportBatch.where({ id: row.importBatchId }).first(),
+    ]);
+    return { ...row, student, discipline, importBatch };
+  }));
+  const period = [...results].sort((a, b) =>
+    (b.importBatch?.importedAt.getTime() ?? 0) - (a.importBatch?.importedAt.getTime() ?? 0),
+  ).find((row) => row.importBatch)?.importBatch;
 
   const program = group?.studyProgram;
   const officialDisciplines = program
@@ -55,10 +62,6 @@ export async function readDocumentData({ groupId, semesterNumber, disciplineId, 
   };
 
   const roster = new Map<number, string>();
-  for (const entry of enrollments) {
-    if (entry.student) roster.set(entry.studentId, studentName(entry.student));
-  }
-  const enrolledCount = roster.size;
   const latest = new Map<string, (typeof results)[number]>();
   const disciplines = new Map<number, string>();
   for (const row of results) {
@@ -81,12 +84,16 @@ export async function readDocumentData({ groupId, semesterNumber, disciplineId, 
     throw new ExportValidationError('Студент не найден в выбранной группе за этот семестр');
   }
 
+  const periodLabel = period?.semester ?? (semesterNumber === undefined ? undefined : `Семестр ${semesterNumber}`);
+  const academicYearMatch = periodLabel?.match(/\b(\d{2}|\d{4})\s*[-/](\d{2}|\d{4})\b/);
+  const academicYear = academicYearMatch?.slice(1)
+    .map((year) => year.length === 2 ? `20${year}` : year).join('–');
   const groupCommissions = withCommission && program && groupId && semesterNumber !== undefined
     ? await orm.AttestationCommission.where({ studyProgramId: program.id, semesterNumber }).include('members').all()
     : [];
   const candidates = groupCommissions
     .filter((commission) => (commission.studyGroupId === groupId || commission.studyGroupId === null) &&
-      (commission.academicYear === null || period?.academicYear == null || commission.academicYear === period.academicYear) &&
+      (commission.academicYear === null || academicYear == null || commission.academicYear === academicYear) &&
       (commission.disciplineId === disciplineId || commission.disciplineId === null))
     .map((commission) => ({ commission, priority: Number(commission.studyGroupId !== null) + 2 * Number(commission.disciplineId !== null) }))
     .sort((a, b) => b.priority - a.priority);
@@ -94,27 +101,22 @@ export async function readDocumentData({ groupId, semesterNumber, disciplineId, 
     ? [...candidates[0].commission.members].sort((a, b) => a.sortOrder - b.sortOrder || a.id - b.id)
     : [];
 
-  const courses = new Set(enrollments.flatMap(({ courseNumber }) => courseNumber == null ? [] : [courseNumber]));
-  const years = new Set(enrollments.flatMap(({ academicYear }) => academicYear ? [academicYear] : []));
-  const yearFromName = period?.semesterLabel.match(/\b(\d{2}|\d{4})\s*[-/]\s*(\d{2}|\d{4})\b/);
-  const academicYear = years.size === 1 ? [...years][0] : yearFromName?.slice(1)
-    .map((year) => year.length === 2 ? `20${year}` : year).join('–');
   const teachers = (id: number) => [...new Set([...latest.values()]
     .filter((row) => row.disciplineId === id)
     .flatMap((row) => [row.teachersWhoGraded, row.teachersFromWorkload])
     .map((value) => value?.replace(/^_+/, '').trim()).filter(Boolean))].join(', ');
   return {
     groupName: group?.name,
-    semesterName: period?.semesterLabel,
+    semesterName: periodLabel,
     academicYear,
-    course: courses.size === 1 ? [...courses][0] : undefined,
+    course: undefined,
     specialty: program ? `${program.specialtyCode} ${program.name}` : undefined,
     qualification: program?.qualification,
     discipline: selectedDiscipline ? disciplineName(selectedDiscipline) : undefined,
     teacher: disciplineId === undefined ? undefined : teachers(disciplineId),
     student: studentId === undefined ? undefined : roster.get(studentId),
     students,
-    hasEnrollment: enrolledCount > 0 && enrolledCount === roster.size,
+    hasEnrollment: students.length > 0,
     disciplines: [...disciplines].map(([id, name]) => ({ id, name, teacher: teachers(id) }))
       .sort((left, right) => left.name.localeCompare(right.name, 'ru')),
     grade: (personId: number, subjectId: number) => latest.get(`${personId}/${subjectId}`)?.finalPointsFivePointScale,
