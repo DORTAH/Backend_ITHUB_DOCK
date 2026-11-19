@@ -3,7 +3,7 @@ import { ExportValidationError } from './export.service.js';
 
 export type DocumentSelection = {
   groupId?: number;
-  semesterId?: number;
+  semesterNumber?: number;
   disciplineId?: number;
   studentId?: number;
 };
@@ -14,19 +14,20 @@ function studentName(student: { firstName: string; lastName: string; patronymic:
   return [student.lastName, student.firstName, student.patronymic].filter(Boolean).join(' ');
 }
 
-export async function readDocumentData({ groupId, semesterId, disciplineId, studentId }: DocumentSelection, withCommission = false) {
+export async function readDocumentData({ groupId, semesterNumber, disciplineId, studentId }: DocumentSelection, withCommission = false) {
   const orm = db.orm.public;
-  const [group, semester, selectedDiscipline, enrollments, results] = await Promise.all([
+  const [group, period, selectedDiscipline, enrollments, results] = await Promise.all([
     groupId === undefined ? undefined : orm.StudyGroup.include('studyProgram').where({ id: groupId }).first(),
-    semesterId === undefined ? undefined : orm.Semester.where({ id: semesterId }).first(),
+    groupId === undefined || semesterNumber === undefined ? undefined : orm.StudyGroupPlanSemester
+      .where({ studyGroupId: groupId, semesterNumber }).first(),
     disciplineId === undefined ? undefined : orm.Discipline.where({ id: disciplineId }).first(),
-    groupId === undefined || semesterId === undefined ? [] : orm.StudentEnrollment
-      .where({ studyGroupId: groupId, semesterId }).include('student').all(),
-    groupId === undefined || semesterId === undefined ? [] : orm.AcademicPerformance
-      .where({ studyGroupId: groupId, semesterId }).include('student').include('discipline').include('importBatch').all(),
+    groupId === undefined || semesterNumber === undefined ? [] : orm.StudentEnrollment
+      .where({ studyGroupId: groupId, semesterNumber }).include('student').all(),
+    groupId === undefined || semesterNumber === undefined ? [] : orm.AcademicPerformance
+      .where({ studyGroupId: groupId, semesterId: semesterNumber }).include('student').include('discipline').include('importBatch').all(),
   ]);
 
-  if ((groupId !== undefined && !group) || (semesterId !== undefined && !semester) ||
+  if ((groupId !== undefined && !group) || (groupId !== undefined && semesterNumber !== undefined && !period) ||
       (disciplineId !== undefined && !selectedDiscipline)) {
     throw new ExportValidationError('Группа, семестр или дисциплина не найдены');
   }
@@ -80,11 +81,12 @@ export async function readDocumentData({ groupId, semesterId, disciplineId, stud
     throw new ExportValidationError('Студент не найден в выбранной группе за этот семестр');
   }
 
-  const groupCommissions = withCommission && program && groupId && semesterId
-    ? await orm.AttestationCommission.where({ studyProgramId: program.id, semesterId }).include('members').all()
+  const groupCommissions = withCommission && program && groupId && semesterNumber !== undefined
+    ? await orm.AttestationCommission.where({ studyProgramId: program.id, semesterNumber }).include('members').all()
     : [];
   const candidates = groupCommissions
     .filter((commission) => (commission.studyGroupId === groupId || commission.studyGroupId === null) &&
+      (commission.academicYear === null || period?.academicYear == null || commission.academicYear === period.academicYear) &&
       (commission.disciplineId === disciplineId || commission.disciplineId === null))
     .map((commission) => ({ commission, priority: Number(commission.studyGroupId !== null) + 2 * Number(commission.disciplineId !== null) }))
     .sort((a, b) => b.priority - a.priority);
@@ -94,7 +96,7 @@ export async function readDocumentData({ groupId, semesterId, disciplineId, stud
 
   const courses = new Set(enrollments.flatMap(({ courseNumber }) => courseNumber == null ? [] : [courseNumber]));
   const years = new Set(enrollments.flatMap(({ academicYear }) => academicYear ? [academicYear] : []));
-  const yearFromName = semester?.name.match(/\b(\d{2}|\d{4})\s*[-/]\s*(\d{2}|\d{4})\b/);
+  const yearFromName = period?.semesterLabel.match(/\b(\d{2}|\d{4})\s*[-/]\s*(\d{2}|\d{4})\b/);
   const academicYear = years.size === 1 ? [...years][0] : yearFromName?.slice(1)
     .map((year) => year.length === 2 ? `20${year}` : year).join('–');
   const teachers = (id: number) => [...new Set([...latest.values()]
@@ -103,7 +105,7 @@ export async function readDocumentData({ groupId, semesterId, disciplineId, stud
     .map((value) => value?.replace(/^_+/, '').trim()).filter(Boolean))].join(', ');
   return {
     groupName: group?.name,
-    semesterName: semester?.name,
+    semesterName: period?.semesterLabel,
     academicYear,
     course: courses.size === 1 ? [...courses][0] : undefined,
     specialty: program ? `${program.specialtyCode} ${program.name}` : undefined,

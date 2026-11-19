@@ -35,19 +35,6 @@ model Suborganization {
   @@map("suborganizations")
 }
 
-model Semester {
-  id      Int                    @id @default(autoincrement())
-  name    String                 @unique
-  records AcademicPerformance[]
-  studentLicenses StudentLicense[]
-  attestationCommissions AttestationCommission[]
-  studentEnrollments StudentEnrollment[]
-  teachingAssignments EmployeeDisciplineAssignment[]
-  groupPlanSemesters StudyGroupPlanSemester[]
-
-  @@map("semesters")
-}
-
 model Student {
   id          Int                    @id @default(autoincrement())
   email       String                 @unique
@@ -59,6 +46,7 @@ model Student {
   records     AcademicPerformance[]
   licenseAssignments StudentLicense[]
   enrollments StudentEnrollment[]
+  grades      StudentDisciplineGrade[]
 
   @@check(expression: sql`"admissionBase" IN (9, 11)`, name: "student_admission_base")
   @@map("students")
@@ -110,6 +98,7 @@ model Discipline {
   fgosMappings       FgosDisciplineMapping[]
   attestationCommissions AttestationCommission[]
   teachingAssignments EmployeeDisciplineAssignment[]
+  studentGrades       StudentDisciplineGrade[]
 
   @@unique([suborganizationId, code, name])
   @@map("disciplines")
@@ -150,63 +139,38 @@ model StudyPlan {
   sourceFileName String?
   studyProgram   StudyProgram         @relation(fields: [studyProgramId], references: [id])
   groups         StudyGroup[]
-  semesters      StudyPlanSemester[]
+  disciplines    StudyPlanDiscipline[]
 
   @@unique([studyProgramId, admissionBase, admissionYear], map: "study_plan_program_cohort_key")
   @@check(expression: sql`"admissionBase" IN (9, 11)`, name: "study_plan_admission_base")
   @@map("study_plans")
 }
 
-model StudyPlanSemester {
-  id                   Int                           @id @default(autoincrement())
-  studyPlanId          Int
-  number               Int
-  studyPlan            StudyPlan                     @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
-  disciplines          StudyPlanDiscipline[]
-  teachingAssignments EmployeeDisciplineAssignment[]
-  groups               StudyGroupPlanSemester[]
-
-  @@unique([studyPlanId, number], map: "study_plan_semester_number_key")
-  @@check(expression: sql`number BETWEEN 1 AND 8`, name: "study_plan_semester_number")
-  @@map("study_plan_semesters")
-}
-
+// Связка группы с календарным периодом и номером семестра в её учебном плане.
 model StudyGroupPlanSemester {
-  id                  Int               @id @default(autoincrement())
-  studyGroupId        Int
-  semesterId          Int
-  studyPlanSemesterId Int
-  studyGroup          StudyGroup        @relation(fields: [studyGroupId], references: [id])
-  semester            Semester          @relation(fields: [semesterId], references: [id])
-  studyPlanSemester   StudyPlanSemester @relation(fields: [studyPlanSemesterId], references: [id])
+  id             Int        @id @default(autoincrement())
+  studyGroupId   Int
+  semesterLabel  String
+  academicYear   String?
+  semesterNumber Int
+  studyGroup     StudyGroup @relation(fields: [studyGroupId], references: [id])
 
-  @@unique([studyGroupId, semesterId], map: "group_plan_calendar_semester_key")
+  @@unique([studyGroupId, semesterLabel], map: "group_plan_calendar_semester_key")
   @@map("study_group_plan_semesters")
 }
 
 model StudyPlanDiscipline {
-  id                  Int               @id @default(autoincrement())
-  studyPlanSemesterId Int
-  fgosDisciplineId    Int
-  controlForm         String?
-  plannedHours        Int?
-  studyPlanSemester   StudyPlanSemester @relation(fields: [studyPlanSemesterId], references: [id], onDelete: Cascade)
-  fgosDiscipline      FgosDiscipline    @relation(fields: [fgosDisciplineId], references: [id])
-  assessments         StudyPlanAssessment[]
+  id               Int            @id @default(autoincrement())
+  studyPlanId      Int
+  fgosDisciplineId Int
+  semesterNumber   Int
+  controlForm      String?
+  plannedHours     Int?
+  studyPlan        StudyPlan      @relation(fields: [studyPlanId], references: [id], onDelete: Cascade)
+  fgosDiscipline   FgosDiscipline @relation(fields: [fgosDisciplineId], references: [id])
 
-  @@unique([studyPlanSemesterId, fgosDisciplineId], map: "study_plan_discipline_key")
+  @@index([studyPlanId, semesterNumber], map: "study_plan_discipline_term_idx")
   @@map("study_plan_disciplines")
-}
-
-model StudyPlanAssessment {
-  id                    Int                 @id @default(autoincrement())
-  studyPlanDisciplineId Int
-  controlForm           String
-  studyPlanDiscipline   StudyPlanDiscipline @relation(fields: [studyPlanDisciplineId], references: [id], onDelete: Cascade)
-
-  @@unique([studyPlanDisciplineId, controlForm], map: "study_plan_assessment_form_key")
-  @@check(expression: sql`length(btrim("controlForm")) > 0`, name: "study_plan_assessment_form")
-  @@map("study_plan_assessments")
 }
 
 // Состав комиссии для ведомости/документа за конкретный период и группу.
@@ -214,17 +178,18 @@ model StudyPlanAssessment {
 model AttestationCommission {
   id             Int                         @id @default(autoincrement())
   studyProgramId Int
-  semesterId     Int
   studyGroupId   Int?
   disciplineId   Int?
+  academicYear   String?
+  semesterNumber Int?
+  semesterLabel  String?
   studyProgram   StudyProgram                @relation(fields: [studyProgramId], references: [id])
-  semester       Semester                    @relation(fields: [semesterId], references: [id])
   studyGroup     StudyGroup?                 @relation(fields: [studyGroupId], references: [id])
   discipline     Discipline?                 @relation(fields: [disciplineId], references: [id])
   members        AttestationCommissionMember[]
 
-  @@index([studyProgramId, semesterId], map: "att_comm_prog_sem_idx")
-  @@index([studyGroupId, semesterId], map: "att_comm_group_sem_idx")
+  @@index([studyProgramId, academicYear, semesterNumber], map: "att_comm_prog_term_idx")
+  @@index([studyGroupId, academicYear, semesterNumber], map: "att_comm_group_term_idx")
   @@map("attestation_commissions")
 }
 
@@ -246,6 +211,7 @@ model Employee {
   fullName            String
   positions           EmployeePosition[]
   teachingAssignments EmployeeDisciplineAssignment[]
+  issuedGrades        StudentDisciplineGrade[]
 
   @@map("employees")
 }
@@ -264,16 +230,14 @@ model EmployeeDisciplineAssignment {
   id                  Int                @id @default(autoincrement())
   employeeId          Int
   disciplineId        Int
-  studyPlanSemesterId Int?
-  semesterId          Int?
   academicYear        Int?
+  semesterNumber      Int?
+  semesterLabel       String?
   employee            Employee           @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   discipline          Discipline         @relation(fields: [disciplineId], references: [id])
-  studyPlanSemester   StudyPlanSemester? @relation(fields: [studyPlanSemesterId], references: [id])
-  semester            Semester?          @relation(fields: [semesterId], references: [id])
 
-  @@index([disciplineId, semesterId], map: "employee_discipline_semester_idx")
-  @@index([employeeId, studyPlanSemesterId], map: "employee_plan_semester_idx")
+  @@index([disciplineId, semesterNumber], map: "employee_discipline_term_idx")
+  @@index([employeeId, academicYear, semesterNumber], map: "employee_year_term_idx")
   @@index([disciplineId, academicYear], map: "employee_discipline_year_idx")
   @@map("employee_discipline_assignments")
 }
@@ -290,13 +254,23 @@ model StudentLicense {
   id         Int      @id @default(autoincrement())
   studentId  Int
   licenseId  Int
-  semesterId Int
   student    Student  @relation(fields: [studentId], references: [id])
   license    License  @relation(fields: [licenseId], references: [id])
-  semester   Semester @relation(fields: [semesterId], references: [id])
+  history    StudentLicenseHistory[]
 
-  @@unique([studentId, semesterId])
   @@map("student_licenses")
+}
+
+model StudentLicenseHistory {
+  id                 Int           @id @default(autoincrement())
+  studentLicenseId   Int
+  semesterLabel      String
+  academicYear       String?
+  semesterNumber     Int?
+  studentLicense     StudentLicense @relation(fields: [studentLicenseId], references: [id])
+
+  @@index([studentLicenseId, academicYear, semesterNumber], map: "student_license_history_term_idx")
+  @@map("student_license_history")
 }
 
 // История обучения студента в группе за каждый семестр.
@@ -304,16 +278,16 @@ model StudentLicense {
 model StudentEnrollment {
   id            Int        @id @default(autoincrement())
   studentId     Int
-  semesterId    Int
   studyGroupId  Int
+  semesterLabel String
+  semesterNumber Int?
   academicYear  String?
   courseNumber  Int?
   student       Student    @relation(fields: [studentId], references: [id])
-  semester      Semester   @relation(fields: [semesterId], references: [id])
   studyGroup    StudyGroup @relation(fields: [studyGroupId], references: [id])
 
-  @@unique([studentId, semesterId], map: "student_enrollment_student_semester_key")
-  @@index([studyGroupId, semesterId], map: "student_enrollment_group_semester_idx")
+  @@unique([studentId, semesterLabel], map: "student_enrollment_student_semester_key")
+  @@index([studyGroupId, academicYear, semesterNumber], map: "student_enrollment_group_term_idx")
   @@map("student_enrollments")
 }
 
@@ -345,13 +319,34 @@ model AcademicPerformance {
   importBatch                  ImportBatch    @relation(fields: [importBatchId], references: [id])
   organizationRef              Organization    @relation(fields: [organizationId], references: [id])
   suborganizationRef           Suborganization @relation(fields: [suborganizationId], references: [id])
-  semesterRef                  Semester        @relation(fields: [semesterId], references: [id])
   student                      Student         @relation(fields: [studentId], references: [id])
   studyGroup                   StudyGroup      @relation(fields: [studyGroupId], references: [id])
   discipline                   Discipline      @relation(fields: [disciplineId], references: [id])
+  studentDisciplineGrades      StudentDisciplineGrade[]
 
   @@unique([importBatchId, sourceRowNumber], map: "ap_batch_row_key")
   @@index([studentId, semesterId], map: "ap_student_semester_idx")
   @@index([disciplineId, semesterId], map: "ap_discipline_semester_idx")
   @@map("academic_performance_records")
+}
+
+model StudentDisciplineGrade {
+  id                    Int                 @id @default(autoincrement())
+  studentId             Int
+  disciplineId          Int
+  employeeId            Int
+  grade                 String
+  semesterNumber        Int
+  admissionYear         Int
+  date                  DateTime
+  academicPerformanceId Int?
+  student               Student             @relation(fields: [studentId], references: [id])
+  discipline            Discipline          @relation(fields: [disciplineId], references: [id])
+  employee              Employee            @relation(fields: [employeeId], references: [id])
+  academicPerformance   AcademicPerformance? @relation(fields: [academicPerformanceId], references: [id])
+
+  @@index([studentId, admissionYear, semesterNumber], map: "student_grade_student_term_idx")
+  @@index([disciplineId, admissionYear, semesterNumber], map: "student_grade_discipline_term_idx")
+  @@index([academicPerformanceId], map: "student_grade_performance_idx")
+  @@map("student_discipline_grades")
 }

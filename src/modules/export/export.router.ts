@@ -21,11 +21,11 @@ exportRouter.get('/documents', (_req, res) => {
 exportRouter.get('/document-students', async (req, res, next) => {
   try {
     const selection = parseDocumentSelection(req.query);
-    if (!selection.groupId || !selection.semesterId) {
+    if (!selection.groupId || !selection.semesterNumber) {
       res.json([]);
       return;
     }
-    res.json((await readDocumentData({ groupId: selection.groupId, semesterId: selection.semesterId })).students);
+    res.json((await readDocumentData({ groupId: selection.groupId, semesterNumber: selection.semesterNumber })).students);
   } catch (error) {
     if (error instanceof ExportValidationError) res.status(400).json({ error: error.message });
     else next(error);

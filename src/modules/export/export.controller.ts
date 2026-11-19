@@ -16,7 +16,7 @@ export async function exportDisciplineRegisterHandler(req: Request, res: Respons
   const optionalText = (value: unknown): string => typeof value === 'string' ? value.trim() : '';
   const input: DisciplineRegisterInput = {
     groupId: parseId(body['groupId']),
-    semesterId: parseId(body['semesterId']),
+    semesterNumber: parseId(body['semesterNumber']),
     disciplineId: parseId(body['disciplineId']),
     specialty: optionalText(body['specialty']),
     qualification: optionalText(body['qualification']),

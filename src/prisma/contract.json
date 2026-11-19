@@ -52,12 +52,16 @@
       "model": "Organization",
       "namespace": "public"
     },
-    "semesters": {
-      "model": "Semester",
+    "student_discipline_grades": {
+      "model": "StudentDisciplineGrade",
       "namespace": "public"
     },
     "student_enrollments": {
       "model": "StudentEnrollment",
+      "namespace": "public"
+    },
+    "student_license_history": {
+      "model": "StudentLicenseHistory",
       "namespace": "public"
     },
     "student_licenses": {
@@ -76,16 +80,8 @@
       "model": "StudyGroup",
       "namespace": "public"
     },
-    "study_plan_assessments": {
-      "model": "StudyPlanAssessment",
-      "namespace": "public"
-    },
     "study_plan_disciplines": {
       "model": "StudyPlanDiscipline",
-      "namespace": "public"
-    },
-    "study_plan_semesters": {
-      "model": "StudyPlanSemester",
       "namespace": "public"
     },
     "study_plans": {
@@ -325,22 +321,6 @@
                   "namespace": "public"
                 }
               },
-              "semesterRef": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
-                  "namespace": "public"
-                }
-              },
               "student": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -354,6 +334,21 @@
                 },
                 "to": {
                   "model": "Student",
+                  "namespace": "public"
+                }
+              },
+              "studentDisciplineGrades": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "academicPerformanceId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentDisciplineGrade",
                   "namespace": "public"
                 }
               },
@@ -471,6 +466,13 @@
           },
           "AttestationCommission": {
             "fields": {
+              "academicYear": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "disciplineId": {
                 "nullable": true,
                 "type": {
@@ -485,8 +487,15 @@
                   "kind": "scalar"
                 }
               },
-              "semesterId": {
-                "nullable": false,
+              "semesterLabel": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterNumber": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
@@ -539,22 +548,6 @@
                   "namespace": "public"
                 }
               },
-              "semester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
-                  "namespace": "public"
-                }
-              },
               "studyGroup": {
                 "cardinality": "N:1",
                 "nullable": true,
@@ -590,14 +583,20 @@
             },
             "storage": {
               "fields": {
+                "academicYear": {
+                  "column": "academicYear"
+                },
                 "disciplineId": {
                   "column": "disciplineId"
                 },
                 "id": {
                   "column": "id"
                 },
-                "semesterId": {
-                  "column": "semesterId"
+                "semesterLabel": {
+                  "column": "semesterLabel"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
                 },
                 "studyGroupId": {
                   "column": "studyGroupId"
@@ -775,6 +774,21 @@
                   "namespace": "public"
                 }
               },
+              "studentGrades": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "disciplineId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentDisciplineGrade",
+                  "namespace": "public"
+                }
+              },
               "suborganization": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -844,6 +858,21 @@
               }
             },
             "relations": {
+              "issuedGrades": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "employeeId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentDisciplineGrade",
+                  "namespace": "public"
+                }
+              },
               "positions": {
                 "cardinality": "1:N",
                 "on": {
@@ -918,14 +947,14 @@
                   "kind": "scalar"
                 }
               },
-              "semesterId": {
+              "semesterLabel": {
                 "nullable": true,
                 "type": {
-                  "codecId": "pg/int4@1",
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
-              "studyPlanSemesterId": {
+              "semesterNumber": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -965,38 +994,6 @@
                   "model": "Employee",
                   "namespace": "public"
                 }
-              },
-              "semester": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
-                  "namespace": "public"
-                }
-              },
-              "studyPlanSemester": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "studyPlanSemesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanSemester",
-                  "namespace": "public"
-                }
               }
             },
             "storage": {
@@ -1013,11 +1010,11 @@
                 "id": {
                   "column": "id"
                 },
-                "semesterId": {
-                  "column": "semesterId"
+                "semesterLabel": {
+                  "column": "semesterLabel"
                 },
-                "studyPlanSemesterId": {
-                  "column": "studyPlanSemesterId"
+                "semesterNumber": {
+                  "column": "semesterNumber"
                 }
               },
               "namespaceId": "public",
@@ -1443,128 +1440,6 @@
               "table": "organizations"
             }
           },
-          "Semester": {
-            "fields": {
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "name": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "attestationCommissions": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "AttestationCommission",
-                  "namespace": "public"
-                }
-              },
-              "groupPlanSemesters": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyGroupPlanSemester",
-                  "namespace": "public"
-                }
-              },
-              "records": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "AcademicPerformance",
-                  "namespace": "public"
-                }
-              },
-              "studentEnrollments": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "StudentEnrollment",
-                  "namespace": "public"
-                }
-              },
-              "studentLicenses": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "StudentLicense",
-                  "namespace": "public"
-                }
-              },
-              "teachingAssignments": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "semesterId"
-                  ]
-                },
-                "to": {
-                  "model": "EmployeeDisciplineAssignment",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "id": {
-                  "column": "id"
-                },
-                "name": {
-                  "column": "name"
-                }
-              },
-              "namespaceId": "public",
-              "table": "semesters"
-            }
-          },
           "Student": {
             "fields": {
               "admissionBase": {
@@ -1633,6 +1508,21 @@
                   "namespace": "public"
                 }
               },
+              "grades": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studentId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentDisciplineGrade",
+                  "namespace": "public"
+                }
+              },
               "licenseAssignments": {
                 "cardinality": "1:N",
                 "on": {
@@ -1692,6 +1582,175 @@
               "table": "students"
             }
           },
+          "StudentDisciplineGrade": {
+            "fields": {
+              "academicPerformanceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "admissionYear": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "date": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "disciplineId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "employeeId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "grade": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterNumber": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "academicPerformance": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "academicPerformanceId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AcademicPerformance",
+                  "namespace": "public"
+                }
+              },
+              "discipline": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "disciplineId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Discipline",
+                  "namespace": "public"
+                }
+              },
+              "employee": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "employeeId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Employee",
+                  "namespace": "public"
+                }
+              },
+              "student": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studentId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Student",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "academicPerformanceId": {
+                  "column": "academicPerformanceId"
+                },
+                "admissionYear": {
+                  "column": "admissionYear"
+                },
+                "date": {
+                  "column": "date"
+                },
+                "disciplineId": {
+                  "column": "disciplineId"
+                },
+                "employeeId": {
+                  "column": "employeeId"
+                },
+                "grade": {
+                  "column": "grade"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
+                },
+                "studentId": {
+                  "column": "studentId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "student_discipline_grades"
+            }
+          },
           "StudentEnrollment": {
             "fields": {
               "academicYear": {
@@ -1715,8 +1774,15 @@
                   "kind": "scalar"
                 }
               },
-              "semesterId": {
+              "semesterLabel": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterNumber": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
@@ -1738,22 +1804,6 @@
               }
             },
             "relations": {
-              "semester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
-                  "namespace": "public"
-                }
-              },
               "student": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -1798,8 +1848,11 @@
                 "id": {
                   "column": "id"
                 },
-                "semesterId": {
-                  "column": "semesterId"
+                "semesterLabel": {
+                  "column": "semesterLabel"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
                 },
                 "studentId": {
                   "column": "studentId"
@@ -1828,13 +1881,6 @@
                   "kind": "scalar"
                 }
               },
-              "semesterId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
               "studentId": {
                 "nullable": false,
                 "type": {
@@ -1844,6 +1890,21 @@
               }
             },
             "relations": {
+              "history": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studentLicenseId"
+                  ]
+                },
+                "to": {
+                  "model": "StudentLicenseHistory",
+                  "namespace": "public"
+                }
+              },
               "license": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -1857,22 +1918,6 @@
                 },
                 "to": {
                   "model": "License",
-                  "namespace": "public"
-                }
-              },
-              "semester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
                   "namespace": "public"
                 }
               },
@@ -1901,15 +1946,90 @@
                 "licenseId": {
                   "column": "licenseId"
                 },
-                "semesterId": {
-                  "column": "semesterId"
-                },
                 "studentId": {
                   "column": "studentId"
                 }
               },
               "namespaceId": "public",
               "table": "student_licenses"
+            }
+          },
+          "StudentLicenseHistory": {
+            "fields": {
+              "academicYear": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterLabel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "studentLicenseId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "studentLicense": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "studentLicenseId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StudentLicense",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "academicYear": {
+                  "column": "academicYear"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "semesterLabel": {
+                  "column": "semesterLabel"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
+                },
+                "studentLicenseId": {
+                  "column": "studentLicenseId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "student_license_history"
             }
           },
           "StudyGroup": {
@@ -2084,6 +2204,13 @@
           },
           "StudyGroupPlanSemester": {
             "fields": {
+              "academicYear": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -2091,7 +2218,14 @@
                   "kind": "scalar"
                 }
               },
-              "semesterId": {
+              "semesterLabel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "semesterNumber": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -2104,32 +2238,9 @@
                   "codecId": "pg/int4@1",
                   "kind": "scalar"
                 }
-              },
-              "studyPlanSemesterId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
               }
             },
             "relations": {
-              "semester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "semesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "Semester",
-                  "namespace": "public"
-                }
-              },
               "studyGroup": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -2145,37 +2256,24 @@
                   "model": "StudyGroup",
                   "namespace": "public"
                 }
-              },
-              "studyPlanSemester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "studyPlanSemesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanSemester",
-                  "namespace": "public"
-                }
               }
             },
             "storage": {
               "fields": {
+                "academicYear": {
+                  "column": "academicYear"
+                },
                 "id": {
                   "column": "id"
                 },
-                "semesterId": {
-                  "column": "semesterId"
+                "semesterLabel": {
+                  "column": "semesterLabel"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
                 },
                 "studyGroupId": {
                   "column": "studyGroupId"
-                },
-                "studyPlanSemesterId": {
-                  "column": "studyPlanSemesterId"
                 }
               },
               "namespaceId": "public",
@@ -2228,6 +2326,21 @@
               }
             },
             "relations": {
+              "disciplines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "studyPlanId"
+                  ]
+                },
+                "to": {
+                  "model": "StudyPlanDiscipline",
+                  "namespace": "public"
+                }
+              },
               "groups": {
                 "cardinality": "1:N",
                 "on": {
@@ -2240,21 +2353,6 @@
                 },
                 "to": {
                   "model": "StudyGroup",
-                  "namespace": "public"
-                }
-              },
-              "semesters": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanSemester",
                   "namespace": "public"
                 }
               },
@@ -2300,64 +2398,6 @@
               "table": "study_plans"
             }
           },
-          "StudyPlanAssessment": {
-            "fields": {
-              "controlForm": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "studyPlanDisciplineId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "studyPlanDiscipline": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "studyPlanDisciplineId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanDiscipline",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "controlForm": {
-                  "column": "controlForm"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "studyPlanDisciplineId": {
-                  "column": "studyPlanDisciplineId"
-                }
-              },
-              "namespaceId": "public",
-              "table": "study_plan_assessments"
-            }
-          },
           "StudyPlanDiscipline": {
             "fields": {
               "controlForm": {
@@ -2388,95 +2428,7 @@
                   "kind": "scalar"
                 }
               },
-              "studyPlanSemesterId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "assessments": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanDisciplineId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanAssessment",
-                  "namespace": "public"
-                }
-              },
-              "fgosDiscipline": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "fgosDisciplineId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "FgosDiscipline",
-                  "namespace": "public"
-                }
-              },
-              "studyPlanSemester": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "studyPlanSemesterId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "StudyPlanSemester",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "controlForm": {
-                  "column": "controlForm"
-                },
-                "fgosDisciplineId": {
-                  "column": "fgosDisciplineId"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "plannedHours": {
-                  "column": "plannedHours"
-                },
-                "studyPlanSemesterId": {
-                  "column": "studyPlanSemesterId"
-                }
-              },
-              "namespaceId": "public",
-              "table": "study_plan_disciplines"
-            }
-          },
-          "StudyPlanSemester": {
-            "fields": {
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/int4@1",
-                  "kind": "scalar"
-                }
-              },
-              "number": {
+              "semesterNumber": {
                 "nullable": false,
                 "type": {
                   "codecId": "pg/int4@1",
@@ -2492,33 +2444,19 @@
               }
             },
             "relations": {
-              "disciplines": {
-                "cardinality": "1:N",
+              "fgosDiscipline": {
+                "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
-                    "id"
+                    "fgosDisciplineId"
                   ],
                   "targetFields": [
-                    "studyPlanSemesterId"
+                    "id"
                   ]
                 },
                 "to": {
-                  "model": "StudyPlanDiscipline",
-                  "namespace": "public"
-                }
-              },
-              "groups": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanSemesterId"
-                  ]
-                },
-                "to": {
-                  "model": "StudyGroupPlanSemester",
+                  "model": "FgosDiscipline",
                   "namespace": "public"
                 }
               },
@@ -2537,37 +2475,31 @@
                   "model": "StudyPlan",
                   "namespace": "public"
                 }
-              },
-              "teachingAssignments": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "studyPlanSemesterId"
-                  ]
-                },
-                "to": {
-                  "model": "EmployeeDisciplineAssignment",
-                  "namespace": "public"
-                }
               }
             },
             "storage": {
               "fields": {
+                "controlForm": {
+                  "column": "controlForm"
+                },
+                "fgosDisciplineId": {
+                  "column": "fgosDisciplineId"
+                },
                 "id": {
                   "column": "id"
                 },
-                "number": {
-                  "column": "number"
+                "plannedHours": {
+                  "column": "plannedHours"
+                },
+                "semesterNumber": {
+                  "column": "semesterNumber"
                 },
                 "studyPlanId": {
                   "column": "studyPlanId"
                 }
               },
               "namespaceId": "public",
-              "table": "study_plan_semesters"
+              "table": "study_plan_disciplines"
             }
           },
           "StudyProgram": {
@@ -3022,25 +2954,6 @@
                 },
                 {
                   "index": {
-                    "name": "academic_performance_records_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "academic_performance_records"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
-                  }
-                },
-                {
-                  "index": {
                     "name": "academic_performance_records_studentId_idx_bf255322"
                   },
                   "source": {
@@ -3120,14 +3033,6 @@
                   ],
                   "name": "academic_performance_records_organizationId_idx_2e17ef41",
                   "prefix": "academic_performance_records_organizationId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "semesterId"
-                  ],
-                  "name": "academic_performance_records_semesterId_idx_c8bca8d0",
-                  "prefix": "academic_performance_records_semesterId_idx",
                   "unique": false
                 },
                 {
@@ -3276,6 +3181,11 @@
             },
             "attestation_commissions": {
               "columns": {
+                "academicYear": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "disciplineId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
@@ -3290,10 +3200,15 @@
                   },
                   "nullable": false
                 },
-                "semesterId": {
+                "semesterLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "semesterNumber": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
-                  "nullable": false
+                  "nullable": true
                 },
                 "studyGroupId": {
                   "codecId": "pg/int4@1",
@@ -3324,25 +3239,6 @@
                     ],
                     "namespaceId": "public",
                     "tableName": "study_programs"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "attestation_commissions_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "attestation_commissions"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
                   }
                 },
                 {
@@ -3388,17 +3284,19 @@
                 {
                   "columns": [
                     "studyGroupId",
-                    "semesterId"
+                    "academicYear",
+                    "semesterNumber"
                   ],
-                  "name": "att_comm_group_sem_idx",
+                  "name": "att_comm_group_term_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "studyProgramId",
-                    "semesterId"
+                    "academicYear",
+                    "semesterNumber"
                   ],
-                  "name": "att_comm_prog_sem_idx",
+                  "name": "att_comm_prog_term_idx",
                   "unique": false
                 },
                 {
@@ -3407,14 +3305,6 @@
                   ],
                   "name": "attestation_commissions_disciplineId_idx_e8c0205f",
                   "prefix": "attestation_commissions_disciplineId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "semesterId"
-                  ],
-                  "name": "attestation_commissions_semesterId_idx_c8bca8d0",
-                  "prefix": "attestation_commissions_semesterId_idx",
                   "unique": false
                 },
                 {
@@ -3540,12 +3430,12 @@
                   },
                   "nullable": false
                 },
-                "semesterId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
+                "semesterLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
                   "nullable": true
                 },
-                "studyPlanSemesterId": {
+                "semesterNumber": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": true
@@ -3590,44 +3480,6 @@
                     "namespaceId": "public",
                     "tableName": "disciplines"
                   }
-                },
-                {
-                  "index": {
-                    "name": "employee_discipline_assignments_studyPlanSemesterId_id_53cb93a2"
-                  },
-                  "source": {
-                    "columns": [
-                      "studyPlanSemesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "employee_discipline_assignments"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_semesters"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "employee_discipline_assignments_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "employee_discipline_assignments"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
-                  }
                 }
               ],
               "indexes": [
@@ -3649,26 +3501,10 @@
                 },
                 {
                   "columns": [
-                    "semesterId"
-                  ],
-                  "name": "employee_discipline_assignments_semesterId_idx_c8bca8d0",
-                  "prefix": "employee_discipline_assignments_semesterId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "studyPlanSemesterId"
-                  ],
-                  "name": "employee_discipline_assignments_studyPlanSemesterId_id_53cb93a2",
-                  "prefix": "employee_discipline_assignments_studyPlanSemesterId_id",
-                  "unique": false
-                },
-                {
-                  "columns": [
                     "disciplineId",
-                    "semesterId"
+                    "semesterNumber"
                   ],
-                  "name": "employee_discipline_semester_idx",
+                  "name": "employee_discipline_term_idx",
                   "unique": false
                 },
                 {
@@ -3682,9 +3518,10 @@
                 {
                   "columns": [
                     "employeeId",
-                    "studyPlanSemesterId"
+                    "academicYear",
+                    "semesterNumber"
                   ],
-                  "name": "employee_plan_semester_idx",
+                  "name": "employee_year_term_idx",
                   "unique": false
                 }
               ],
@@ -4083,8 +3920,41 @@
                 }
               ]
             },
-            "semesters": {
+            "student_discipline_grades": {
               "columns": {
+                "academicPerformanceId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "admissionYear": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "date": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                },
+                "disciplineId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "employeeId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "grade": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
@@ -4094,26 +3964,152 @@
                   },
                   "nullable": false
                 },
-                "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
+                "semesterNumber": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "studentId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
                   "nullable": false
                 }
               },
-              "foreignKeys": [],
-              "indexes": [],
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "student_discipline_grades_studentId_idx_bf255322"
+                  },
+                  "source": {
+                    "columns": [
+                      "studentId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_discipline_grades"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "students"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "student_discipline_grades_disciplineId_idx_e8c0205f"
+                  },
+                  "source": {
+                    "columns": [
+                      "disciplineId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_discipline_grades"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "disciplines"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "student_discipline_grades_employeeId_idx_087dd4a6"
+                  },
+                  "source": {
+                    "columns": [
+                      "employeeId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_discipline_grades"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "employees"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "student_grade_performance_idx"
+                  },
+                  "source": {
+                    "columns": [
+                      "academicPerformanceId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_discipline_grades"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "academic_performance_records"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "disciplineId"
+                  ],
+                  "name": "student_discipline_grades_disciplineId_idx_e8c0205f",
+                  "prefix": "student_discipline_grades_disciplineId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "employeeId"
+                  ],
+                  "name": "student_discipline_grades_employeeId_idx_087dd4a6",
+                  "prefix": "student_discipline_grades_employeeId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentId"
+                  ],
+                  "name": "student_discipline_grades_studentId_idx_bf255322",
+                  "prefix": "student_discipline_grades_studentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "disciplineId",
+                    "admissionYear",
+                    "semesterNumber"
+                  ],
+                  "name": "student_grade_discipline_term_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "academicPerformanceId"
+                  ],
+                  "name": "student_grade_performance_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentId",
+                    "admissionYear",
+                    "semesterNumber"
+                  ],
+                  "name": "student_grade_student_term_idx",
+                  "unique": false
+                }
+              ],
               "primaryKey": {
                 "columns": [
                   "id"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "name"
-                  ]
-                }
-              ]
+              "uniques": []
             },
             "student_enrollments": {
               "columns": {
@@ -4136,10 +4132,15 @@
                   },
                   "nullable": false
                 },
-                "semesterId": {
+                "semesterLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "semesterNumber": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
-                  "nullable": false
+                  "nullable": true
                 },
                 "studentId": {
                   "codecId": "pg/int4@1",
@@ -4174,25 +4175,6 @@
                 },
                 {
                   "index": {
-                    "name": "student_enrollments_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "student_enrollments"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
-                  }
-                },
-                {
-                  "index": {
                     "name": "student_enrollments_studyGroupId_idx_b7300630"
                   },
                   "source": {
@@ -4215,17 +4197,10 @@
                 {
                   "columns": [
                     "studyGroupId",
-                    "semesterId"
+                    "academicYear",
+                    "semesterNumber"
                   ],
-                  "name": "student_enrollment_group_semester_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "semesterId"
-                  ],
-                  "name": "student_enrollments_semesterId_idx_c8bca8d0",
-                  "prefix": "student_enrollments_semesterId_idx",
+                  "name": "student_enrollment_group_term_idx",
                   "unique": false
                 },
                 {
@@ -4254,11 +4229,90 @@
                 {
                   "columns": [
                     "studentId",
-                    "semesterId"
+                    "semesterLabel"
                   ],
                   "name": "student_enrollment_student_semester_key"
                 }
               ]
+            },
+            "student_license_history": {
+              "columns": {
+                "academicYear": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "semesterLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "semesterNumber": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
+                },
+                "studentLicenseId": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "student_license_history_studentLicenseId_idx_1232b097"
+                  },
+                  "source": {
+                    "columns": [
+                      "studentLicenseId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_license_history"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "student_licenses"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "studentLicenseId"
+                  ],
+                  "name": "student_license_history_studentLicenseId_idx_1232b097",
+                  "prefix": "student_license_history_studentLicenseId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "studentLicenseId",
+                    "academicYear",
+                    "semesterNumber"
+                  ],
+                  "name": "student_license_history_term_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "student_licenses": {
               "columns": {
@@ -4272,11 +4326,6 @@
                   "nullable": false
                 },
                 "licenseId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                },
-                "semesterId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
@@ -4325,25 +4374,6 @@
                     "namespaceId": "public",
                     "tableName": "licenses"
                   }
-                },
-                {
-                  "index": {
-                    "name": "student_licenses_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "student_licenses"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
-                  }
                 }
               ],
               "indexes": [
@@ -4353,14 +4383,6 @@
                   ],
                   "name": "student_licenses_licenseId_idx_bd8730e9",
                   "prefix": "student_licenses_licenseId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "semesterId"
-                  ],
-                  "name": "student_licenses_semesterId_idx_c8bca8d0",
-                  "prefix": "student_licenses_semesterId_idx",
                   "unique": false
                 },
                 {
@@ -4377,14 +4399,7 @@
                   "id"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "studentId",
-                    "semesterId"
-                  ]
-                }
-              ]
+              "uniques": []
             },
             "students": {
               "checks": [
@@ -4452,6 +4467,11 @@
             },
             "study_group_plan_semesters": {
               "columns": {
+                "academicYear": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
@@ -4461,17 +4481,17 @@
                   },
                   "nullable": false
                 },
-                "semesterId": {
+                "semesterLabel": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "semesterNumber": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
                 },
                 "studyGroupId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                },
-                "studyPlanSemesterId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
@@ -4496,69 +4516,15 @@
                     "namespaceId": "public",
                     "tableName": "study_groups"
                   }
-                },
-                {
-                  "index": {
-                    "name": "study_group_plan_semesters_semesterId_idx_c8bca8d0"
-                  },
-                  "source": {
-                    "columns": [
-                      "semesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_group_plan_semesters"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "semesters"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "study_group_plan_semesters_studyPlanSemesterId_idx_53cb93a2"
-                  },
-                  "source": {
-                    "columns": [
-                      "studyPlanSemesterId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_group_plan_semesters"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_semesters"
-                  }
                 }
               ],
               "indexes": [
-                {
-                  "columns": [
-                    "semesterId"
-                  ],
-                  "name": "study_group_plan_semesters_semesterId_idx_c8bca8d0",
-                  "prefix": "study_group_plan_semesters_semesterId_idx",
-                  "unique": false
-                },
                 {
                   "columns": [
                     "studyGroupId"
                   ],
                   "name": "study_group_plan_semesters_studyGroupId_idx_b7300630",
                   "prefix": "study_group_plan_semesters_studyGroupId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "studyPlanSemesterId"
-                  ],
-                  "name": "study_group_plan_semesters_studyPlanSemesterId_idx_53cb93a2",
-                  "prefix": "study_group_plan_semesters_studyPlanSemesterId_idx",
                   "unique": false
                 }
               ],
@@ -4571,7 +4537,7 @@
                 {
                   "columns": [
                     "studyGroupId",
-                    "semesterId"
+                    "semesterLabel"
                   ],
                   "name": "group_plan_calendar_semester_key"
                 }
@@ -4708,82 +4674,6 @@
                 }
               ]
             },
-            "study_plan_assessments": {
-              "checks": [
-                {
-                  "expression": "length(btrim(\"controlForm\")) > 0",
-                  "name": "study_plan_assessment_form_1d4d2127",
-                  "prefix": "study_plan_assessment_form"
-                }
-              ],
-              "columns": {
-                "controlForm": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
-                  "nullable": false
-                },
-                "studyPlanDisciplineId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "study_plan_assessments_studyPlanDisciplineId_idx_dde5ce2b"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "studyPlanDisciplineId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_assessments"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_disciplines"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "studyPlanDisciplineId"
-                  ],
-                  "name": "study_plan_assessments_studyPlanDisciplineId_idx_dde5ce2b",
-                  "prefix": "study_plan_assessments_studyPlanDisciplineId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": [
-                {
-                  "columns": [
-                    "studyPlanDisciplineId",
-                    "controlForm"
-                  ],
-                  "name": "study_plan_assessment_form_key"
-                }
-              ]
-            },
             "study_plan_disciplines": {
               "columns": {
                 "controlForm": {
@@ -4810,7 +4700,12 @@
                   "dataType": "pg/int4",
                   "nullable": true
                 },
-                "studyPlanSemesterId": {
+                "semesterNumber": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "studyPlanId": {
                   "codecId": "pg/int4@1",
                   "dataType": "pg/int4",
                   "nullable": false
@@ -4819,12 +4714,12 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "study_plan_disciplines_studyPlanSemesterId_idx_53cb93a2"
+                    "name": "study_plan_disciplines_studyPlanId_idx_5ee30651"
                   },
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
-                      "studyPlanSemesterId"
+                      "studyPlanId"
                     ],
                     "namespaceId": "public",
                     "tableName": "study_plan_disciplines"
@@ -4834,7 +4729,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "study_plan_semesters"
+                    "tableName": "study_plans"
                   }
                 },
                 {
@@ -4860,6 +4755,14 @@
               "indexes": [
                 {
                   "columns": [
+                    "studyPlanId",
+                    "semesterNumber"
+                  ],
+                  "name": "study_plan_discipline_term_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "fgosDisciplineId"
                   ],
                   "name": "study_plan_disciplines_fgosDisciplineId_idx_94293b20",
@@ -4868,86 +4771,10 @@
                 },
                 {
                   "columns": [
-                    "studyPlanSemesterId"
-                  ],
-                  "name": "study_plan_disciplines_studyPlanSemesterId_idx_53cb93a2",
-                  "prefix": "study_plan_disciplines_studyPlanSemesterId_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": [
-                {
-                  "columns": [
-                    "studyPlanSemesterId",
-                    "fgosDisciplineId"
-                  ],
-                  "name": "study_plan_discipline_key"
-                }
-              ]
-            },
-            "study_plan_semesters": {
-              "checks": [
-                {
-                  "expression": "number BETWEEN 1 AND 8",
-                  "name": "study_plan_semester_number_2ea74590",
-                  "prefix": "study_plan_semester_number"
-                }
-              ],
-              "columns": {
-                "id": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "default": {
-                    "expression": "autoincrement()",
-                    "kind": "function"
-                  },
-                  "nullable": false
-                },
-                "number": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                },
-                "studyPlanId": {
-                  "codecId": "pg/int4@1",
-                  "dataType": "pg/int4",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "study_plan_semesters_studyPlanId_idx_5ee30651"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "studyPlanId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plan_semesters"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "study_plans"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
                     "studyPlanId"
                   ],
-                  "name": "study_plan_semesters_studyPlanId_idx_5ee30651",
-                  "prefix": "study_plan_semesters_studyPlanId_idx",
+                  "name": "study_plan_disciplines_studyPlanId_idx_5ee30651",
+                  "prefix": "study_plan_disciplines_studyPlanId_idx",
                   "unique": false
                 }
               ],
@@ -4956,15 +4783,7 @@
                   "id"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "studyPlanId",
-                    "number"
-                  ],
-                  "name": "study_plan_semester_number_key"
-                }
-              ]
+              "uniques": []
             },
             "study_plans": {
               "checks": [
@@ -5207,7 +5026,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f9918dd934502adbfaca545acd0820ebc68d5266b1b2a85ecc8807597e81e149"
+    "storageHash": "5f0660d95852aac462ad97a8337d65ab13cfc8a9e45d031924c42d82714b623f"
   },
   "execution": {
     "executionHash": "aa8f401b4a47fe8dddeb01fde7e4a1379a14a8e5847e2639e62598991947b74e",

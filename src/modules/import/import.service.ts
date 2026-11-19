@@ -43,7 +43,6 @@ export async function importExcel(filePath: string, originalName: string): Promi
     let chunk = [firstRow.value];
     const organizations = createLookup<number>();
     const suborganizations = createLookup<number>();
-    const semesters = createLookup<number>();
     const students = createLookup<number>();
     const groups = createLookup<number>();
     const disciplines = createLookup<number>();
@@ -75,11 +74,6 @@ export async function importExcel(filePath: string, originalName: string): Promi
         () => tx.orm.public.Suborganization.where({ organizationId, name: row.suborganization }).first(),
         () => tx.orm.public.Suborganization.create({ organizationId, name: row.suborganization }),
       );
-      const semesterId = await resolveId(
-        semesters, row.semester,
-        () => tx.orm.public.Semester.where({ name: row.semester }).first(),
-        () => tx.orm.public.Semester.create({ name: row.semester }),
-      );
       const email = row.studentEmail.toLowerCase();
       const studentId = await resolveId(
         students, email,
@@ -97,23 +91,33 @@ export async function importExcel(filePath: string, originalName: string): Promi
         () => tx.orm.public.StudyGroup.where({ suborganizationId, name: row.groupName }).first(),
         () => tx.orm.public.StudyGroup.create({ suborganizationId, name: row.groupName }),
       );
-      const enrollmentKey = `${studentId}\u0000${semesterId}`;
+      const groupPeriod = await tx.orm.public.StudyGroupPlanSemester
+        .where({ studyGroupId: groupId, semesterLabel: row.semester })
+        .first();
+      if (!groupPeriod) {
+        throw new ImportValidationError(`Для группы «${row.groupName}» не настроено соответствие семестра «${row.semester}» учебному плану`);
+      }
+      const semesterNumber = groupPeriod.semesterNumber;
+      const academicYear = academicYearFromSemester(row.semester);
+      const enrollmentKey = `${studentId}\u0000${row.semester}`;
       if (!enrollments.has(enrollmentKey)) {
-        const academicYear = academicYearFromSemester(row.semester);
         const existingEnrollment = await tx.orm.public.StudentEnrollment
-          .where({ studentId, semesterId })
+          .where({ studentId, semesterLabel: row.semester })
           .first();
 
         if (existingEnrollment) {
-          if (existingEnrollment.studyGroupId !== groupId || existingEnrollment.academicYear !== academicYear) {
+          if (existingEnrollment.studyGroupId !== groupId ||
+              existingEnrollment.academicYear !== academicYear ||
+              existingEnrollment.semesterNumber !== semesterNumber) {
             await tx.orm.public.StudentEnrollment
               .where({ id: existingEnrollment.id })
-              .update({ studyGroupId: groupId, academicYear });
+              .update({ studyGroupId: groupId, academicYear, semesterNumber });
           }
         } else {
           await tx.orm.public.StudentEnrollment.create({
             studentId,
-            semesterId,
+            semesterLabel: row.semester,
+            semesterNumber,
             studyGroupId: groupId,
             academicYear,
           });
@@ -155,7 +159,8 @@ export async function importExcel(filePath: string, originalName: string): Promi
         sourceRowNumber,
         organizationId,
         suborganizationId,
-        semesterId,
+        // Keep the legacy column name, but it stores the semester ordinal and has no FK.
+        semesterId: semesterNumber,
         studentId,
         studyGroupId: groupId,
         disciplineId,

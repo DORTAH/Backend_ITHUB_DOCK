@@ -10,7 +10,7 @@ const subjectRegisterTemplate = 'Ведомость по дисциплине, �
 
 export type DisciplineRegisterInput = {
   groupId: number;
-  semesterId: number;
+  semesterNumber: number;
   disciplineId: number;
   specialty: string;
   qualification: string;
@@ -39,13 +39,13 @@ function uniqueNames(values: Array<string | null>): string {
 }
 
 export async function getExportOptions() {
-  const [groups, semesters, disciplines] = await Promise.all([
+  const [groups, groupPeriods, disciplines] = await Promise.all([
     db.orm.public.StudyGroup
       .include('suborganization', (suborganization) => suborganization.select('name'))
       .include('studyProgram', (program) => program.select('specialtyCode', 'name', 'qualification'))
       .orderBy((group) => group.name.asc())
       .all(),
-    db.orm.public.Semester.select('id', 'name').orderBy((semester) => semester.name.desc()).all(),
+    db.orm.public.StudyGroupPlanSemester.select('semesterNumber', 'semesterLabel').all(),
     db.orm.public.Discipline
       .include('suborganization', (suborganization) => suborganization.select('name'))
       .orderBy((discipline) => discipline.code.asc())
@@ -61,7 +61,9 @@ export async function getExportOptions() {
         qualification: studyProgram?.qualification ?? '',
       }]
       : []),
-    semesters,
+    semesters: [...new Set(groupPeriods.map(({ semesterNumber }) => semesterNumber))]
+      .sort((left, right) => left - right)
+      .map((semesterNumber) => ({ id: semesterNumber, name: `Семестр ${semesterNumber}` })),
     disciplines: disciplines.flatMap(({ id, code, name, suborganization }) => suborganization
       ? [{ id, label: `${code} — ${name} (${suborganization.name})` }]
       : []),
@@ -88,18 +90,21 @@ export function clearYellowFill(sheet: ExcelJS.Worksheet) {
 }
 
 export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
-  if (!Number.isSafeInteger(input.groupId) || !Number.isSafeInteger(input.semesterId) || !Number.isSafeInteger(input.disciplineId)) {
+  if (!Number.isSafeInteger(input.groupId) || !Number.isSafeInteger(input.semesterNumber) || !Number.isSafeInteger(input.disciplineId)) {
     throw new ExportValidationError('Выберите группу, семестр и дисциплину');
   }
   if (!nonEmpty(input.controlForm)) throw new ExportValidationError('Укажите форму контроля');
 
-  const [group, semester, discipline, rows] = await Promise.all([
+  const [group, period, discipline, rows] = await Promise.all([
     db.orm.public.StudyGroup
       .include('suborganization', (suborganization) => suborganization.select('id', 'name'))
       .include('studyProgram', (program) => program.select('specialtyCode', 'name', 'qualification'))
       .where({ id: input.groupId })
       .first(),
-    db.orm.public.Semester.where({ id: input.semesterId }).first(),
+    db.orm.public.StudyGroupPlanSemester.where({
+      studyGroupId: input.groupId,
+      semesterNumber: input.semesterNumber,
+    }).first(),
     db.orm.public.Discipline
       .include('suborganization', (suborganization) => suborganization.select('id', 'name'))
       .where({ id: input.disciplineId })
@@ -107,7 +112,7 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
     db.orm.public.AcademicPerformance
       .where({
         studyGroupId: input.groupId,
-        semesterId: input.semesterId,
+        semesterId: input.semesterNumber,
         disciplineId: input.disciplineId,
       })
       .include('student', (student) => student.select('lastName', 'firstName', 'patronymic'))
@@ -116,7 +121,7 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
       .all(),
   ]);
 
-  if (!group || !semester || !discipline) {
+  if (!group || !period || !discipline) {
     throw new ExportValidationError('Выбранные группа, семестр или дисциплина не найдены');
   }
   if (!group.suborganization || !discipline.suborganization) {
@@ -173,16 +178,17 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   const teacher = nonEmpty(input.teacher)
     ? input.teacher.trim()
     : uniqueNames(rowsWithRelations.flatMap((row) => [row.teachersWhoGraded, row.teachersFromWorkload]));
-  const academicYear = semester.name.match(/(\d{2})\s*[-/]\s*(\d{2})/);
-  const yearLabel = academicYear ? `${20}${academicYear[1]}-${20}${academicYear[2]} г.` : '';
-  const semesterName = semester.name.toLocaleLowerCase('ru');
+  const academicYear = period.academicYear ?? period.semesterLabel.match(/(\d{2})\s*[-/]\s*(\d{2})/)?.slice(1)
+    .map((year) => `20${year}`).join('/');
+  const yearLabel = academicYear ? `${academicYear.replace('/', '-')} г.` : '';
+  const semesterName = period.semesterLabel.toLocaleLowerCase('ru');
   const halfYear = semesterName.includes('осенн')
     ? 'I полугодие'
     : semesterName.includes('весенн')
       ? 'II полугодие'
       : '';
 
-  sheet.getCell('B5').value = `Зачетно-экзаменационная ведомость за ${[halfYear, yearLabel].filter(Boolean).join(' ') || semester.name}`;
+  sheet.getCell('B5').value = `Зачетно-экзаменационная ведомость за ${[halfYear, yearLabel].filter(Boolean).join(' ') || period.semesterLabel}`;
   sheet.getCell('B6').value = `Специальность – ${specialty}`;
   sheet.getCell('B7').value = `Группа ${group.name}, квалификация: ${qualification}`;
   sheet.getCell('B8').value = `Форма контроля: ${input.controlForm.trim()}`;
@@ -216,7 +222,7 @@ export async function exportDisciplineRegister(input: DisciplineRegisterInput) {
   sheet.pageSetup.fitToHeight = 0;
 
   const buffer = await workbook.xlsx.writeBuffer();
-  const filename = [group.name, semester.name, discipline.code, 'ведомость']
+  const filename = [group.name, period.semesterLabel, discipline.code, 'ведомость']
     .map(safeFilenamePart)
     .filter(Boolean)
     .join('_') + '.xlsx';

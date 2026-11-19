@@ -43,7 +43,7 @@ export function parseDocumentSelection(input: unknown): DocumentSelection {
   if (input == null) return {};
   if (typeof input !== 'object' || Array.isArray(input)) throw new ExportValidationError('Ожидается объект параметров');
   const selection: DocumentSelection = {};
-  for (const key of ['groupId', 'semesterId', 'disciplineId', 'studentId'] as const) {
+  for (const key of ['groupId', 'semesterNumber', 'disciplineId', 'studentId'] as const) {
     const value = (input as Record<string, unknown>)[key];
     if (value == null || value === '') continue;
     const id = typeof value === 'number' || (typeof value === 'string' && /^\d+$/.test(value)) ? Number(value) : NaN;
